@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/view.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">src/</a> view.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">4.55% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>2/44</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/14</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/20</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">5.13% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>2/39</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/*
+ * notes.js - module to provide CRUD db capabilities
+ */
+&nbsp;
+/*jslint         node    : true, continue : true,
+  devel  : true, indent  : 2,    maxerr   : 50,
+  newcap : true, nomen   : true, plusplus : true,
+  regexp : true, sloppy  : true, vars     : false,
+  white  : true
+ */
+&nbsp;
+import _ from 'lodash';
+import Document from './document';
+&nbsp;
+'use strict';
+&nbsp;
+var View = {
+  create: function(socket, domainId, viewData) {<span class="fstat-no" title="function not covered" ></span>
+    var view = {<span class="cstat-no" title="statement not covered" ></span>
+      replace: function(viewRaw, callback) {<span class="fstat-no" title="function not covered" ></span>
+	    const self = this;<span class="cstat-no" title="statement not covered" ></span>
+	    socket.emit('re<span class="cstat-no" title="statement not covered" >placeView', domainId, this.id, viewRaw, function(err, viewData) {<span class="fstat-no" title="function not covered" ></span></span>
+	      if(err) return cal<span class="cstat-no" title="statement not covered" >lback(err<span class="cstat-no" title="statement not covered" >);</span></span>
+		  
+	      for(var key in sel<span class="cstat-no" title="statement not covered" >f) {</span>
+		    if(self.hasOwnProperty(k<span class="cstat-no" title="statement not covered" >ey)&amp;&amp;!_.isFunction(self[key])) try{delete self[key];}catch<span class="cstat-no" title="statement not covered" >(e){}</span></span>
+	      }<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+	      _.merge(self, viewData);
+	      callback(null, true);	  
+	    });<span class="cstat-no" title="statement not covered" ></span>
+      },<span class="cstat-no" title="statement not covered" ></span>
+  
+      patch: function(patch, callback) {
+	    const self = this;
+	    socket.emit('patchView', domainId, this.id, patch,<span class="fstat-no" title="function not covered" > function(err, viewData) {</span>
+	      if(err) return callback(<span class="cstat-no" title="statement not covered" >err);</span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+	      for(var key in sel<span class="cstat-no" title="statement not covered" >f) {<span class="cstat-no" title="statement not covered" ></span></span>
+		    if(self.hasOwnProperty(key)&amp;&amp;!_.isFunction(self[key])) try{delete self[key];}catch(e){}
+	      }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span>
+	      _.merge(self, viewData);<span class="cstat-no" title="statement not covered" ></span>
+	      callback(null, true);
+	    });
+      },
+  <span class="cstat-no" title="statement not covered" ></span>
+      remove: function(ca<span class="cstat-no" title="statement not covered" >llback) {</span>
+        socket.emit('removeView', domainId, this.id, function(err, result) {
+	      callback(err, result);	  
+         });
+      },<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      getACL: function(ca<span class="cstat-no" title="statement not covered" >llback) {</span>
+	    socket.emit('getViewACL', domainId, this.id, function(err, acl) {
+	      callback(err, acl);
+	    });
+      },<span class="fstat-no" title="function not covered" ></span>
+  <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      replaceACL: functio<span class="cstat-no" title="statement not covered" >n(acl, callback) {</span>
+	    socket.emit('replaceViewACL', domainId, this.id, acl, function(err, result) {
+	      callback(err, result);
+	    });
+      },<span class="fstat-no" title="function not covered" ></span>
+  <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      patchACL: function(<span class="cstat-no" title="statement not covered" >aclPatch, callback) {</span>
+	    socket.emit('patchViewACL', domainId, this.id, aclPatch, function(err, result) {
+	      callback(err, result);
+	    });
+      },<span class="fstat-no" title="function not covered" ></span>
+  <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      removePermissionSub<span class="cstat-no" title="statement not covered" >ject: function(acl, cal</span>lback) {
+	    socket.emit('removeViewPermissionSubject', domainId, this.id, acl, function(err, result) {
+	      callback(err, result);
+	    });
+      },<span class="fstat-no" title="function not covered" ></span>
+  <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      findDocuments: func<span class="cstat-no" title="statement not covered" >tion(query, callback) {</span>
+        const viewId = this.id;
+	    socket.emit('findViewDocuments', domainId, viewId, query, function(err, docsData) {
+          if(err) return callback(err);
+<span class="fstat-no" title="function not covered" ></span>
+          var documents = _.map(d<span class="cstat-no" title="statement not covered" >ocsData.</span>hits.hits, function(docData){
+      	    return Do<span class="cstat-no" title="statement not covered" >cument.create(socket, domainId, viewId, docData._source);<span class="fstat-no" title="function not covered" ></span></span>
+          });<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span>
+&nbsp;
+	      callback(null, {total:docsData.hit<span class="cstat-no" title="statement not covered" >s.total, documents: documents});<span class="fstat-no" title="function not covered" ></span></span>
+	    });<span class="cstat-no" title="statement not covered" ></span>
+      },
+&nbsp;
+      refresh: function(c<span class="cstat-no" title="statement not covered" >allback) {</span>
+        socket.emit('refreshView', domainId, this.id, function(err, result) {
+	      callback(err, result);
+	    });
+      }  	<span class="fstat-no" title="function not covered" ></span>
+    };<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+<span class="cstat-no" title="statement not covered" ></span>
+    _.merge(view, viewData);
+&nbsp;
+    return view;
+  }
+};<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+export {Vi<span class="cstat-no" title="statement not covered" >ew as default</span>};</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Mon Oct 22 2018 09:53:13 GMT+0800 (CST)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

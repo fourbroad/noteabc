@@ -1,0 +1,29 @@
+// @import "~bootstrap/scss/bootstrap";
+
+
+.json-form {
+  padding: 20px;
+
+  .json-form-header {
+    border-bottom: 1px solid lightgray;
+    margin-bottom: 10px;
+    
+    h4 {
+      display: inline-block;
+    }
+
+    .btn {
+      border-color: lightgray;
+      border-radius: 0.2rem;
+    }
+  }
+
+  .json-form-toolbox {
+
+  }
+
+  .json-form-content {
+
+  }  
+
+}
