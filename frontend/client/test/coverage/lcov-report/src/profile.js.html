@@ -20,9 +20,9 @@
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">5.71% </span>
+        <span class="strong">5.26% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>2/35</span>
+        <span class='fraction'>2/38</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">0% </span>
@@ -32,12 +32,12 @@
       <div class='fl pad1y space-right2'>
         <span class="strong">0% </span>
         <span class="quiet">Functions</span>
-        <span class='fraction'>0/15</span>
+        <span class='fraction'>0/19</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">6.45% </span>
+        <span class="strong">5.88% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>2/31</span>
+        <span class='fraction'>2/34</span>
       </div>
     </div>
   </div>
@@ -128,7 +128,20 @@
 83
 84
 85
-86</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -148,18 +161,10 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -181,7 +186,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -210,7 +219,24 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/*
@@ -230,13 +256,21 @@ import _ from 'lodash';
 'use strict';
 &nbsp;
 var Profile = {<span class="fstat-no" title="function not covered" ></span>
-  create: function(socke<span class="cstat-no" title="statement not covered" >t, domainId, profileData) {</span>
-    var profile = {<span class="fstat-no" title="function not covered" ></span>
+  create: function(soc<span class="cstat-no" title="statement not covered" >ket, domainId, profileData) {</span>
+    var proto = {<span class="fstat-no" title="function not covered" ></span>
+      getDomainId: f<span class="cstat-no" title="statement not covered" >unction(){</span>
+      	return domainId;
+      },
+<span class="fstat-no" title="function not covered" ></span>
+      getCollectionI<span class="cstat-no" title="statement not covered" >d: function(){</span>
+      	return ".profiles";
+      },
+<span class="fstat-no" title="function not covered" ></span>
       replace: function(profile<span class="cstat-no" title="statement not covered" >Raw, </span>callback) {
 	    const self = th<span class="cstat-no" title="statement not covered" >is;<span class="fstat-no" title="function not covered" ></span></span>
 	    socket.emit('replace<span class="cstat-no" title="statement not covered" >Profile',<span class="cstat-no" title="statement not covered" > domainId, this.id, pr</span></span>ofileRaw, function(err, profileData) {
 	      if(err) return callback(err);
-			  <span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
 	      for(var key in self) {<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span>
 		    if(self.hasOwnProperty(key)&amp;&amp;<span class="cstat-no" title="statement not covered" >!_.isFunction(self</span>[key])) try{delete self[key];}catch(e){}
 	      }
@@ -250,7 +284,7 @@ var Profile = {<span class="fstat-no" title="function not covered" ></span>
 	    const self = this;<span class="fstat-no" title="function not covered" ></span>
 	    socket.emit('patchProfile'<span class="cstat-no" title="statement not covered" >, dom</span>ainId, this.id, patch, function(err, profileData) {
 	      if(err) retur<span class="cstat-no" title="statement not covered" >n callback(err);<span class="fstat-no" title="function not covered" ></span></span>
-				  <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span>
 	      for(var key in self) {
 		    if(self.hasOwnPrope<span class="cstat-no" title="statement not covered" >rty(key)&amp;&amp;!_.isFunction(self[key])) try{delete self[key];}catch(e){}</span>
 	      }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span>
@@ -288,14 +322,19 @@ var Profile = {<span class="fstat-no" title="function not covered" ></span>
 	    socket.emit('removeProfilePermissionSubject', domainId, this.id, acl, function(err, result) {
 	      callback(err, result);
 	    });<span class="fstat-no" title="function not covered" ></span>
-      }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      },<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+<span class="cstat-no" title="statement not covered" ></span>
+      getFormId: function(){
+      	return this._metadata.formId;
+      }
+<span class="fstat-no" title="function not covered" ></span>
     };<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-    _.merge(profile, profileData);
-&nbsp;
-    return profile;
-  }<span class="cstat-no" title="statement not covered" ></span>
-};
+  	function constructor(){};
+  	_.merge(constructor.prototype, proto);
+  	return _.merge(new constructor(), profileData);
+  }<span class="fstat-no" title="function not covered" ></span>
+};<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
 export {Profile as default};
 &nbsp;</pre></td></tr>
@@ -304,7 +343,7 @@ export {Profile as default};
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Mon Oct 22 2018 09:53:13 GMT+0800 (CST)
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Mon Oct 29 2018 21:20:57 GMT+0800 (CST)
 </div>
 </div>
 <script src="../prettify.js"></script>

@@ -3,11 +3,15 @@ const
   webpack = require('webpack'),
   merge = require('webpack-merge'),
   common = require('./webpack.common.js'),
-  UglifyJSPlugin = require('uglifyjs-webpack-plugin'),  
-  CleanWebpackPlugin = require('clean-webpack-plugin');
+  cssNext = require('postcss-cssnext'),
+  MiniCssExtractPlugin = require("mini-css-extract-plugin"),
+  UglifyJsPlugin = require('uglifyjs-webpack-plugin'),  
+  CleanWebpackPlugin = require('clean-webpack-plugin'),
+  ImageminPlugin    = require('imagemin-webpack-plugin').default,
+  OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 
-const name = 'notesabc-loader';
-const identity = "_" + name.replace(/[\.,-]/g,'_');
+const name = '@notesabc/loader';
+const identity = "_" + name.replace(/[\.,@,/,-]/g,'_');
 
 module.exports = merge(common, {
   mode: 'production',
@@ -18,7 +22,7 @@ module.exports = merge(common, {
   output: {
     filename: '[name].bundle.js',
     path: path.resolve(__dirname, 'dist'),
-    publicPath: '/',
+    publicPath: 'http://localhost:8088/@notesabc/loader/',
     library: identity,
     libraryTarget: 'umd'
   },
@@ -46,9 +50,70 @@ module.exports = merge(common, {
       colors     : true
     }
   },
+  module:{
+    rules:[{
+      test: /\.(sa|sc|c)ss$/,
+      use: [{
+        loader: MiniCssExtractPlugin.loader,
+      },{
+        loader: 'css-loader',
+        options: {
+          sourceMap : false,
+          minimize  : true
+        }
+      },{
+        loader: 'postcss-loader',
+        options: {
+          sourceMap: false,
+          plugins: () => [cssNext()]
+        }
+      },{
+        loader: 'sass-loader',
+        options: {
+          sourceMap: false,
+          includePaths: [
+            path.join(__dirname, 'node_modules'),
+            path.join(__dirname, 'src', 'assets', 'styles'),
+            path.join(__dirname, 'src')
+          ]
+        }
+      }]
+    }]
+  },
+  externals: {
+    bootstrap: {
+      commonjs: 'bootstrap',
+      commonjs2: 'bootstrap',
+      amd: 'bootstrap'
+    },
+    jquery: {
+      commonjs: 'jquery',
+      commonjs2: 'jquery',
+      amd: 'jquery'
+    },
+    lodash: {
+      commonjs: 'lodash',
+      commonjs2: 'lodash',
+      amd: 'lodash'
+    }
+  },  
   plugins: [
+    new MiniCssExtractPlugin({
+      filename: '[name].bundle.css',
+      chunkFilename: '[id].bundle.css',
+    }),
     new CleanWebpackPlugin(['dist']),
-    new UglifyJSPlugin({sourceMap: true}),
+    new ImageminPlugin(),
     new webpack.DefinePlugin({'process.env.NODE_ENV': JSON.stringify('production')})
-  ]
+  ],
+  optimization: {
+//     minimizer: [
+//       new UglifyJsPlugin({
+//         cache: true,
+//         parallel: true,
+//         sourceMap: true // set to true if you want JS source maps
+//       }),
+//       new OptimizeCSSAssetsPlugin({})
+//     ]
+  }  
 });

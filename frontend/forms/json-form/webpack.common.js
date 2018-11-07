@@ -36,13 +36,6 @@ module.exports = {
       }]      
     }]
   },
-//   externals: {
-//     bootstrap: {
-//       commonjs: 'bootstrap',
-//       commonjs2: 'bootstrap',
-//       amd: 'bootstrap'
-//     }
-//   },
   plugins: [
     new webpack.ProvidePlugin({
       $: 'jquery',

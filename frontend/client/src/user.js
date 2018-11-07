@@ -15,7 +15,15 @@ import _ from 'lodash';
 
 var User = {
   create: function(socket, userData) {
-    var user = {
+    var proto = {
+      getDomainId: function(){
+      	return "localhost";
+      },
+
+      getCollectionId: function(){
+      	return ".users";
+      },
+    	
       isAnonymous: function(){
   	    return this.id === 'anonymous';
       },
@@ -82,12 +90,17 @@ var User = {
 	    socket.emit('removeUserPermissionSubject', this.id, acl, function(err, result) {
 	      callback(err, result);
 	    });
-      }  	
+      },
+
+      getFormId: function(){
+      	return this._metadata.formId;
+      }
+        	
     };
 
-    _.merge(user, userData);
-
-    return user;
+  	function constructor(){};
+  	_.merge(constructor.prototype, proto);
+  	return _.merge(new constructor(), userData);
   }
 };
 

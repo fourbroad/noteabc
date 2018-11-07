@@ -15,7 +15,42 @@ import _ from 'lodash';
 
 var Document = {
   create: function(socket, domainId, collectionId, docData) {
-    var document = {
+    var proto = {
+      getDomainId: function(){
+      	return domainId;
+      },
+
+      getCollectionId: function(){
+      	return collectionId;
+      },
+
+      saveAs: function(){
+      	var id, title, newDocument = _.cloneDeep(this);
+
+	    if(arguments.length == 1 && typeof arguments[0] == 'function'){
+	      id = uuidv4();
+	      title = newDocument.title;
+	      callback = arguments[0];
+	    } else if(arguments.length == 2 && typeof arguments[1] == 'function'){
+	      id = arguments[0];
+	      title = newDocument.title;
+	      callback = arguments[1];
+	    } else if(arguments.length == 3 && typeof arguments[2] == 'function'){
+	      id = arguments[0];
+	      title = arguments[1];
+	      callback = arguments[2];
+	    } else {
+	      throw new Error('Number or type of Arguments is not correct!');
+	    }
+
+      	newDocument.title = title;
+      	delete newDocument.id;
+	   	
+	    socket.emit('createDocument', domainId, collectionId, id, newDocument, function(err, docData) {
+	      callback(err, err ? null : Document.create(socket, domainId, collectionId, docData));
+	    });
+	  },
+
       replace: function(docRaw, callback) {
 	    const self = this;
 	    socket.emit('replaceDocument', domainId, collectionId, this.id, docRaw, function(err, docData) {
@@ -72,12 +107,16 @@ var Document = {
 	    socket.emit('removeDocumentPermissionSubject', domainId, collectionId, this.id, acl, function(err, result) {
 	      callback(err, result);
 	    });
+      },
+
+      getFormId: function(){
+      	return this._metadata.formId;
       }
     };
 
-    _.merge(document, docData);
-
-    return document;
+  	function constructor(){};
+  	_.merge(constructor.prototype, proto);
+  	return _.merge(new constructor(), docData);
   }	
 };
 

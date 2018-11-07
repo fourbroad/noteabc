@@ -4,9 +4,11 @@ const
   merge = require('webpack-merge'),
   common = require('./webpack.common.js'),
   cssNext = require('postcss-cssnext'),
-  UglifyJSPlugin = require('uglifyjs-webpack-plugin'),  
+  MiniCssExtractPlugin = require("mini-css-extract-plugin"),
+  UglifyJsPlugin = require('uglifyjs-webpack-plugin'),  
   CleanWebpackPlugin = require('clean-webpack-plugin'),
-  ImageminPlugin    = require('imagemin-webpack-plugin').default ;
+  ImageminPlugin    = require('imagemin-webpack-plugin').default,
+  OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 
 const name = '@notesabc/json-form';
 const identity = "_" + name.replace(/[\.,@,/,-]/g,'_');
@@ -50,12 +52,9 @@ module.exports = merge(common, {
   },
   module:{
     rules:[{
-      test: /\.css$/,
-      use: ['style-loader', "css-loader"]      
-    },{
-      test: /\.scss$/,
+      test: /\.(sa|sc|c)ss$/,
       use: [{
-        loader: 'style-loader',
+        loader: MiniCssExtractPlugin.loader,
       },{
         loader: 'css-loader',
         options: {
@@ -81,10 +80,40 @@ module.exports = merge(common, {
       }]
     }]
   },
+//  externals: {
+//    bootstrap: {
+//      commonjs: 'bootstrap',
+//      commonjs2: 'bootstrap',
+//      amd: 'bootstrap'
+//    }
+//  },  
   plugins: [
+    new MiniCssExtractPlugin({
+      filename: '[name].bundle.css',
+      chunkFilename: '[id].bundle.css',
+    }),
     new CleanWebpackPlugin(['dist']),
     new ImageminPlugin(),
-    new UglifyJSPlugin({sourceMap: true}),
     new webpack.DefinePlugin({'process.env.NODE_ENV': JSON.stringify('production')})
-  ]
+  ],
+  optimization: {
+//     minimizer: [
+//       new UglifyJsPlugin({
+//         cache: true,
+//         parallel: true,
+//         sourceMap: true // set to true if you want JS source maps
+//       }),
+//       new OptimizeCSSAssetsPlugin({})
+//     ],
+//     splitChunks: {
+//       cacheGroups: {
+//         styles: {
+//           name: 'styles',
+//           test: /\.(sa|sc|c)ss$/,
+//           chunks: 'all',
+//           enforce: true
+//         }
+//       }
+//     }
+  }  
 });

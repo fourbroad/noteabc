@@ -16,12 +16,20 @@ import _ from 'lodash';
 
 var Profile = {
   create: function(socket, domainId, profileData) {
-    var profile = {
+    var proto = {
+      getDomainId: function(){
+      	return domainId;
+      },
+
+      getCollectionId: function(){
+      	return ".profiles";
+      },
+
       replace: function(profileRaw, callback) {
 	    const self = this;
 	    socket.emit('replaceProfile', domainId, this.id, profileRaw, function(err, profileData) {
 	      if(err) return callback(err);
-			  
+
 	      for(var key in self) {
 		    if(self.hasOwnProperty(key)&&!_.isFunction(self[key])) try{delete self[key];}catch(e){}
 	      }
@@ -35,7 +43,7 @@ var Profile = {
 	    const self = this;
 	    socket.emit('patchProfile', domainId, this.id, patch, function(err, profileData) {
 	      if(err) return callback(err);
-				  
+
 	      for(var key in self) {
 		    if(self.hasOwnProperty(key)&&!_.isFunction(self[key])) try{delete self[key];}catch(e){}
 	      }
@@ -73,12 +81,17 @@ var Profile = {
 	    socket.emit('removeProfilePermissionSubject', domainId, this.id, acl, function(err, result) {
 	      callback(err, result);
 	    });
+      },
+
+      getFormId: function(){
+      	return this._metadata.formId;
       }
+
     };
 
-    _.merge(profile, profileData);
-
-    return profile;
+  	function constructor(){};
+  	_.merge(constructor.prototype, proto);
+  	return _.merge(new constructor(), profileData);
   }
 };
 

@@ -18,7 +18,42 @@ import _ from 'lodash';
 
 var Collection = {
   create : function(socket, domainId, collectionData) {
-    var collection = {
+    var proto = {
+      getDomainId: function(){
+      	return domainId;
+      },
+
+      getCollectionId: function(){
+      	return ".collections";
+      },
+
+      saveAs: function(){
+      	var id, title, newCollection = _.cloneDeep(this);
+
+	    if(arguments.length == 1 && typeof arguments[0] == 'function'){
+	      id = uuidv4();
+	      title = newCollection.title;
+	      callback = arguments[0];
+	    } else if(arguments.length == 2 && typeof arguments[1] == 'function'){
+	      id = arguments[0];
+	      title = newCollection.title;
+	      callback = arguments[1];
+	    } else if(arguments.length == 3 && typeof arguments[2] == 'function'){
+	      id = arguments[0];
+	      title = arguments[1];
+	      callback = arguments[2];
+	    } else {
+	      throw new Error('Number or type of Arguments is not correct!');
+	    }
+
+      	newCollection.title = title;
+      	delete newCollection.id;
+	   	
+	    socket.emit('createCollection', domainId, id, newCollection, function(err, collectionData){
+	      callback(err, err ? null : Collection.create(socket, domainId, collectionData));
+	    });
+      },
+
       createDocument: function() {
 	    const collectionId = this.id;
 	    var docId, docRaw, callback;
@@ -34,7 +69,7 @@ var Collection = {
 	    } else {
 	      throw new Error('Number or type of Arguments is not correct!');
 	    }
-	  	
+
 	    socket.emit('createDocument', domainId, collectionId, docId, docRaw, function(err, docData) {
 	      callback(err, err ? null : Document.create(socket, domainId, collectionId, docData));
 	    });
@@ -134,12 +169,16 @@ var Collection = {
 	    socket.emit('refreshCollection', domainId, this.id, function(err, result){
 	      callback(err, result);	  
 	    });
+      },
+
+      getFormId: function(){
+      	return this._metadata.formId;
       }
     };
 
-    _.merge(collection, collectionData);
-
-    return collection;
+  	function constructor(){};
+  	_.merge(constructor.prototype, proto);
+  	return _.merge(new constructor(), collectionData);
   }
 };
 

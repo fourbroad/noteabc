@@ -66,10 +66,47 @@ _createClient = function(token, socket, currentUser){
       });
     },
 
-    getDomain: function(domainId, callback){
+    getDomain: function(){
+	  var domainId, callback;
+	  if(arguments.length == 1 && typeof arguments[0] == 'function'){
+	    domainId = document.domain;
+	    callback = arguments[0];
+	  } else if(arguments.length == 2 && typeof arguments[1] == 'function'){
+	    domainId = arguments[0];
+	    callback = arguments[1];
+	  } else {
+	    throw utils.makeError('Error', 'Number or type of arguments is not correct!', arguments);
+	  }	  
+	    	
 	  socket.emit('getDomain', domainId, function(err, domainData){
 	    callback(err, err ? null : Domain.create(socket, domainData));
 	  });
+    },
+
+    findDomains: function(query, callback){
+      socket.emit('findDomains', query, function(err, domainInfos){
+        if(err) return callback(err);
+        var domains = _.map(domainInfos.hits.hits, function(domainInfo){
+   	      return Domain.create(socket, domainInfo._source);
+        })
+
+	    callback(null, {total:domainInfos.hits.total, domains: domains});
+	  });
+    },
+
+    distinctQueryDomains: function(field, wildcard, callback){
+   	  var query = {
+        collapse:{field: field + '.keyword'},
+        aggs:{itemCount:{cardinality:{field: field+'.keyword'}}}
+//        _source:[field]
+      };
+
+      if(wildcard){
+        query.query = {wildcard:{}};
+        query.query.wildcard[field+".keyword"] = wildcard;
+      }
+
+      this.findDomains(query, callback);
     },
 
     disconnect: function(){
@@ -115,7 +152,7 @@ connect = function(token, callback){
   var socket = io.connect('http://localhost:8000/domains?token=' + token);
   socket.on('connect', function(){
     socket.emit('getUser', function(err, userData){
-	  callback(err, err ? null : _createClient(token, socket, User.create(socket, userData), _clientProto));
+	  callback(err, err ? null : _createClient(token, socket, User.create(socket, userData)));
     });
   });
 };

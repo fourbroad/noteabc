@@ -2,8 +2,9 @@ const
   path = require('path'),
   webpack = require('webpack'),  
   merge = require('webpack-merge'),
-  cssNext = require('postcss-cssnext'),  
   common = require('./webpack.common.js'),
+  cssNext = require('postcss-cssnext'),
+  MiniCssExtractPlugin = require("mini-css-extract-plugin"),
   DashboardPlugin = require('webpack-dashboard/plugin'),
   HtmlWebpackPlugin = require('html-webpack-plugin');
 
@@ -11,23 +12,22 @@ module.exports = merge(common, {
   mode: 'development',  
   devtool: 'inline-source-map',
   entry: {
-    'test':'./test/index.js'
+    index: './test/index.js'
   },
   output: {
     filename: '[name].bundle.js',
-    path: path.resolve(__dirname, 'dist'),
-    publicPath: '/'
+    path: path.resolve(__dirname, 'dist')
   },
   watch: true,
   devServer: {
     contentBase        : path.join(__dirname, 'dist'),
     historyApiFallback : true,
-    port               : 8080,
     compress           : false,
     inline             : true,
     watchContentBase   : true,
     hot                : true,
     host               : '0.0.0.0',
+    port               : 8080,
     disableHostCheck   : true,
     overlay            : true,
     stats: {
@@ -45,10 +45,7 @@ module.exports = merge(common, {
   },
   module:{
     rules:[{
-      test: /\.css$/,
-      use: ['style-loader','css-loader']
-    },{
-      test: /\.scss$/,
+      test: /\.(sa|sc|c)ss$/,
       use: [{
         loader: 'style-loader',
       },{
@@ -74,18 +71,37 @@ module.exports = merge(common, {
           ]
         }
       }]
+    },{
+      test: require.resolve('jquery'),
+      use: [{
+        loader: 'expose-loader',
+        options: 'jQuery'
+      },{
+        loader: 'expose-loader',
+        options: '$'
+      }]
+    },{
+      test: require.resolve('lodash'),
+      use: [{
+        loader: 'expose-loader',
+        options: '_'
+      }]
+    },{
+      test: require.resolve('bootstrap'),
+      use: [{
+        loader: 'expose-loader',
+        options: 'bootstrap'
+      }]
     }]
   },
   plugins: [
-    new HtmlWebpackPlugin({title: 'Notesabc Loader'}),
+    new MiniCssExtractPlugin({
+      filename: '[name].css',
+      chunkFilename: '[id].css',
+    }),  
+    new HtmlWebpackPlugin({title: 'Notesabc Loader'}),  
     new DashboardPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.ProvidePlugin({
-      $: 'jquery',
-      jQuery: 'jquery',
-      'window.jQuery': 'jquery',
-      Popper: ['popper.js', 'default']      
-    })    
-  ]
+    new webpack.HotModuleReplacementPlugin()
+  ]  
 });

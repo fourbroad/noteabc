@@ -1,6 +1,11 @@
+import * as $ from 'jquery';
+
+//import 'bootstrap';
+
+import Loader from 'loader';
+import Client from '@notesabc/frontend-client'
+
 import './index.scss';
-import 'bootstrap';
-import loader from 'loader';
 
 $('body').css({
   position: 'absolute',
@@ -9,20 +14,31 @@ $('body').css({
   margin: 0
 });
 
-loader.load("http://localhost:8088/@notesabc/json-form/json-form.bundle.js", "@notesabc/json-form", function(module){
-  var Json = module.default;
-  Json.create({
-    $container:$('body'),
-    form: null,
-    document: {
-      title: 'Hello world!',
-      'array': [1, 2, 3],
-      'boolean': true,
-      'color': '#82b92c',
-      'null': null,
-      'number': 123,
-      'object': {'a': 'b', 'c': 'd'},
-      'string': 'Hello World'
-    }
+window.Loader = Loader;
+window.$ = $;
+
+Client.login("administrator","!QAZ)OKM", function(err1, client){
+  if(err1) return console.log(err1);  
+  window.client = client;
+  client.getDomain('localhost',function(err2, domain){
+    if(err2) return console.log(err2);
+    window.domain = domain;
+    domain.getForm('json-form', function(err3, doc){
+      if(err3) return console.log(err3);
+      var formId = doc.getFormId()||'json-form';
+      domain.getForm(formId, function(err4, form){
+        if(err4) return console.log(err4);
+        window.form = form;
+        Loader.load(form.plugin, function(module){
+          var JsonForm = module.default;
+          JsonForm.create({
+            client: client,
+            $container:$('body'),
+            form: form,
+            document: doc
+          });
+        });
+      });
+    });
   });
 });

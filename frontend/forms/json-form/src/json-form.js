@@ -1,12 +1,16 @@
-// import 'bootstrap';
+import * as $ from 'jquery';
+import _ from 'lodash';
+import 'bootstrap';
+
+import validate from "validate.js";
+import jsonPatch from "fast-json-patch";
+import uuidv4 from 'uuid/v4';
+import JSONEditor from 'jsoneditor/dist/jsoneditor';
+
+import Select from '@notesabc/select'
 
 import './json-form.scss';
 import jsonFormHtml from './json-form.html';
-
-import validate from "validate.js";
-
-import 'jsoneditor/dist/jsoneditor.css';
-import JSONEditor from 'jsoneditor/dist/jsoneditor';
 
 function create(opts){
   const
@@ -20,18 +24,24 @@ function create(opts){
     $saveBtn =$('.save.btn', $jsonFormHeader),
     $itemSaveAs = $('.dropdown-item.save-as', $jsonFormHeader),
     $itemDiscard = $('.dropdown-item.discard', $jsonFormHeader),
-    $newDocModel = $('#newDoc', $jsonFormHeader),
-    $titleInput = $('input[name="title"]', $newDocModel),
-    $form = $('form.new-doc', $newDocModel),
-    $submitBtn = $('.btn.submit', $newDocModel),
+    $saveAsModel = $('#save-as', $jsonFormHeader),
+    $titleInput = $('input[name="title"]', $saveAsModel),
+    $form = $('form.save-as', $saveAsModel),
+    $domain = $('div.domain', $saveAsModel),
+    $collection = $('div.collection', $saveAsModel),
+    $id = $('input[name="id"]', $saveAsModel),
+    $title = $('input[name="title"]', $saveAsModel),
+    $submitBtn = $('.btn.submit', $saveAsModel),
     $toolbox = $('.json-form-toolbox', $jsonForm),
     constraints = {};
 
   var
-    document = opts.document, newDocument = _.cloneDeep(document), jsonEditor,
-    _init, _initToolbox, _isDirty, _refreshHeader, _onSubmit, save, saveAs, onDiscard;
+    client = opts.client, document = opts.document, newDocument = _.cloneDeep(document), jsonEditor, observer,
+    domainSelect, collectionSelect,
+    _init, _initToolbox, _onChange, _isDirty, _refreshHeader, _onSubmit, save, saveAs, onDiscard;
 
   _refreshHeader = function(){
+    $jsonFormTitle.html(newDocument.title||newDocument.id);      
     if(_isDirty()){
       $saveBtn.html("Save");
       $saveBtn.removeAttr('data-toggle');
@@ -39,27 +49,50 @@ function create(opts){
       $dropdownToggle.show();
     }else{
       $saveBtn.html("Save as ...");
-      $saveBtn.attr({'data-toggle':'modal'});      
+      $saveBtn.attr({'data-toggle':'modal'});
       $modified.hide();
       $dropdownToggle.hide();
     }
   };
 
   _isDirty = function(){
-    return jiff.diff(document, newDocument).length > 0;
+    return jsonPatch.compare(document, newDocument).length > 0;
   };
 
   save = function(){
     if(_isDirty()){
-      document.patch(jiff.diff(document, newDocument), function(err, result){
+      document.patch(jsonPatch.compare(document, newDocument), function(err, result){
         if(err) return console.log(err);
+        newDocument = _.cloneDeep(document)        
         _refreshHeader();
       });
     }
   };
 
   saveAs = function(){
-
+    var errors = validate($form, constraints);
+    if (errors) {
+      console.log(errors);
+    } else {
+      var values = validate.collectFormValues($form, {trim: true}), 
+          docInfo = _.cloneDeep(newDocument),
+          domainId = domainSelect.getSelectedItems()[0].value, 
+          collectionId = collectionSelect.getSelectedItems()[0].value;
+      client.getDomain(domainId, function(err1, domain){
+        domain.getCollection(collectionId, function(err2, collection){
+          delete docInfo.id;
+          docInfo.title = values.title;
+          collection.createDocument(values.id, docInfo, function(err3, doc){
+            if(err3) return console.log(err3);
+            $saveAsModel.modal('toggle');
+            document = doc;
+            newDocument = _.cloneDeep(document);
+            jsonEditor.set(newDocument);
+            _refreshHeader();
+          });
+        });
+      });
+    }
   };
 
   onDiscard = function(){
@@ -74,21 +107,7 @@ function create(opts){
     evt.preventDefault();
     evt.stopPropagation();
 
-    var errors = validate($form, constraints);
-    if (errors) {
-//       utils.showErrors($form, errors);
-      console.log(errors);
-    } else {
-      var values = validate.collectFormValues($form, {trim: true}), title = values.title, docInfo = _.cloneDeep(document);
-      delete docInfo.id;
-      delete docInfo.collectionId;
-      delete docInfo.domainId;
-      docInfo.title = title;
-      currentDomain.createDocument(docInfo, function(err, document){
-          $newDocModel.modal('toggle')
-      });
-//       utils.clearErrors($form);
-    }
+    saveAs();
   };
 
   _initToolbox = function(){
@@ -97,18 +116,11 @@ function create(opts){
 
   _init = function(doc){
     $jsonForm.appendTo($container.empty());
-
-    $jsonFormTitle.html(document.title||document.id);
+    $jsonFormTitle.html(newDocument.title||newDocument.id);
     jsonEditor = new JSONEditor($jsonFormContent.get(0), {
       mode: 'tree',
       modes: ['code', 'form', 'text', 'tree', 'view'], // allowed modes
       onEditable: function (node) {
-        // node is an object like:
-        //   {
-        //     field: 'FIELD',
-        //     value: 'VALUE',
-        //     path: ['PATH', 'TO', 'NODE']
-        //   }
         switch (node.field) {
           case 'id':
             return false;
@@ -134,12 +146,59 @@ function create(opts){
     _refreshHeader();
     _initToolbox();
 
-    $newDocModel.on('shown.bs.modal', function () {
+    $saveAsModel.on('show.bs.modal', function () {
+      domainSelect = Select.create({
+        $container: $domain,
+        title: 'domain',
+        mode: 'single',
+        menuItems: function(filter, callback){
+          client.findDomains({}, function(err, domains){
+            if(err) return console.log(err);
+            var items = _.map(domains.domains, function(domain){
+              return {label:domain['title']||domain['id'], value:domain['id']};
+            });
+            callback(items);
+          });
+        },
+        onValueChanged: function(){
+          collectionSelect.reset();
+        }
+      });
+      
+      collectionSelect = Select.create({
+        $container: $collection,
+        title: 'collection',
+        mode: 'single',
+        menuItems: function(filter, callback){
+          var selectedDomains = domainSelect.getSelectedItems();
+          if(selectedDomains[0]){
+            client.getDomain(selectedDomains[0].value, function(err, domain){
+              domain.findCollections({}, function(err, collections){
+                if(err) return console.log(err);
+                var items = _.map(collections.collections, function(collection){
+                  return {label:collection['title']||collection['id'], value:collection['id']};
+                });
+                callback(items);
+              });
+            });
+          }else{
+            callback([]);
+          }
+        }
+      });
+
+      $id.val(uuidv4());
+    });
+
+    $saveAsModel.on('shown.bs.modal', function () {
       $titleInput.val('');
       $titleInput.trigger('focus')
-    })    
+    });
 
     $saveBtn.on('click', save);
+    $itemSaveAs.on('click', function(){
+      $saveAsModel.modal('toggle');
+    });
     $itemDiscard.on('click', onDiscard);
     $submitBtn.on('click', _onSubmit);
     $form.bind('submit', _onSubmit);

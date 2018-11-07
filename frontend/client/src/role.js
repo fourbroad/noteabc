@@ -16,12 +16,29 @@ import _ from 'lodash';
 
 var Role = {
   create: function(socket, domainId, roleData) {
-    var role = {
+    var proto = {
+      getDomainId: function(){
+      	return domainId;
+      },
+
+      getCollectionId: function(){
+      	return ".roles";
+      },
+
+      saveAs: function(id, title, callback){
+      	var newRole =  _.cloneDeep(this);
+      	newRole.title = title;
+      	delete newRole.id;
+	    socket.emit('createRole', domainId, id, newRole, function(err, roleData){
+	      callback(err, err ? null : Role.create(socket, domainId, roleData));	  
+	    });
+      },
+
       replace: function(roleRaw, callback) {
 	    const self = this;
 	    socket.emit('replaceRole', domainId, this.id, roleRaw, function(err, roleData) {
 	      if(err) return callback(err);
-			  
+
 	      for(var key in self) {
 		    if(self.hasOwnProperty(key)&&!_.isFunction(self[key])) try{delete self[key];}catch(e){}
 	      }
@@ -73,12 +90,17 @@ var Role = {
 	    socket.emit('removeRolePermissionSubject', domainId, this.id, acl, function(err, result) {
 	      callback(err, result);
 	    });
+      },
+
+      getFormId: function(){
+      	return this._metadata.formId;
       }
+      
     };
 
-    _.merge(role, roleData);
-
-    return role;
+  	function constructor(){};
+  	_.merge(constructor.prototype, proto);
+  	return _.merge(new constructor(), roleData);
   }
 };
 

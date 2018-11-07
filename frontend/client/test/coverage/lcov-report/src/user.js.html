@@ -20,9 +20,9 @@
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">71.05% </span>
+        <span class="strong">65.85% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>27/38</span>
+        <span class='fraction'>27/41</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">83.33% </span>
@@ -30,14 +30,14 @@
         <span class='fraction'>10/12</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">50% </span>
+        <span class="strong">45.45% </span>
         <span class="quiet">Functions</span>
-        <span class='fraction'>9/18</span>
+        <span class='fraction'>10/22</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">73.53% </span>
+        <span class="strong">67.57% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>25/34</span>
+        <span class='fraction'>25/37</span>
       </div>
     </div>
   </div>
@@ -136,7 +136,20 @@
 91
 92
 93
-94</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -159,12 +172,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2×</span>
 <span class="cline-any cline-yes">2×</span>
 <span class="cline-any cline-yes">2×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2×</span>
-<span class="cline-any cline-yes">24×</span>
+<span class="cline-any cline-yes">30×</span>
 <span class="cline-any cline-yes">6×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -180,7 +201,7 @@
 <span class="cline-any cline-yes">2×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2×</span>
-<span class="cline-any cline-yes">23×</span>
+<span class="cline-any cline-yes">29×</span>
 <span class="cline-any cline-yes">5×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -227,8 +248,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11×</span>
 <span class="cline-any cline-yes">11×</span></td><td class="text"><pre class="prettyprint lang-js">/*
  * User.js - module to provide CRUD db capabilities
  */
@@ -246,7 +272,15 @@ import _ from 'lodash';
 &nbsp;
 var User = {
   create: function(socket, userData) {
-    var user = {
+    var proto = {
+      getDomainId: function(){<span class="fstat-no" title="function not covered" ></span>
+      	return "local<span class="cstat-no" title="statement not covered" >host";</span>
+      },
+&nbsp;
+      getCollectionId: function(){<span class="fstat-no" title="function not covered" ></span>
+      	return ".user<span class="cstat-no" title="statement not covered" >s";</span>
+      },
+    	
       isAnonymous: function(){<span class="fstat-no" title="function not covered" ></span>
   	    return this.i<span class="cstat-no" title="statement not covered" >d === 'anonymous';</span>
       },
@@ -313,12 +347,17 @@ var User = {
 	    socket.emit('removeUserPermissionSubject', this.id, acl, function(err, result) {
 	      callback(err, result);
 	    });
-      }  	<span class="fstat-no" title="function not covered" ></span>
-    };<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      },<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      getFormId: function<span class="cstat-no" title="statement not covered" >(){</span>
+      	return this._metadata.formId;
+      }
+        	
+    };<span class="fstat-no" title="function not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-    _.merge(user, userData);
-&nbsp;
-    return user;
+  	function constructor(){};
+  	_.merge(constructor.prototype, proto);
+  	return _.merge(new constructor(), userData);
   }
 };
 &nbsp;
@@ -328,7 +367,7 @@ export {User as default};</pre></td></tr>
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Mon Oct 22 2018 09:53:13 GMT+0800 (CST)
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Mon Oct 29 2018 21:20:57 GMT+0800 (CST)
 </div>
 </div>
 <script src="../prettify.js"></script>

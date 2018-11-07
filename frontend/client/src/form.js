@@ -16,12 +16,46 @@ import _ from 'lodash';
 
 var Form = {
   create: function(socket, domainId, formData) {
-    var form = {
+    var proto = {
+      getDomainId: function(){
+      	return domainId;
+      },
+
+      getCollectionId: function(){
+      	return ".forms";
+      },
+
+      saveAs: function(){
+      	var id, title, newForm =  _.cloneDeep(this);
+
+	    if(arguments.length == 1 && typeof arguments[0] == 'function'){
+	      id = uuidv4();
+	      title = newForm.title;
+	      callback = arguments[0];
+	    } else if(arguments.length == 2 && typeof arguments[1] == 'function'){
+	      id = arguments[0];
+	      title = newForm.title;
+	      callback = arguments[1];
+	    } else if(arguments.length == 3 && typeof arguments[2] == 'function'){
+	      id = arguments[0];
+	      title = arguments[1];
+	      callback = arguments[2];
+	    } else {
+	      throw new Error('Number or type of Arguments is not correct!');
+	    }
+
+      	newForm.title = title;
+      	delete newForm.id;
+	    socket.emit('createForm', domainId, id, newForm, function(err, formData){
+	      callback(err, err ? null : Form.create(socket, domainId, formData));
+	    });
+      },
+
       replace: function(formRaw, callback) {
 	    const self = this;
 	    socket.emit('replaceForm', domainId, this.id, formRaw, function(err, formData) {
 	      if(err) return callback(err);
-			  
+
 	      for(var key in self) {
 		    if(self.hasOwnProperty(key)&&!_.isFunction(self[key])) try{delete self[key];}catch(e){}
 	      }
@@ -30,7 +64,7 @@ var Form = {
 	      callback(null, true);	  
 	    });
       },
-  
+
       patch: function(patch, callback) {
 	    const self = this;
 	    socket.emit('patchForm', domainId, this.id, patch, function(err, formData) {
@@ -44,7 +78,7 @@ var Form = {
 	      callback(null, true);	  
 	    });
       },
-  
+
       remove: function(callback) {
 	    socket.emit('removeForm', domainId, this.id, function(err, result) {
 	      callback(err, result);
@@ -73,12 +107,17 @@ var Form = {
 	    socket.emit('removeFormPermissionSubject', domainId, this.id, acl, function(err, result) {
 	      callback(err, result);
 	    });
+      },
+
+      getFormId: function(){
+      	return this._metadata.formId;
       }
+      
     };
 
-    _.merge(form, formData);
-
-    return form;
+  	function constructor(){};
+  	_.merge(constructor.prototype, proto);
+  	return _.merge(new constructor(), formData);
   }
 };
 

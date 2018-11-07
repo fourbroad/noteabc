@@ -4,6 +4,7 @@ const
   merge = require('webpack-merge'),
   common = require('./webpack.common.js'),
   cssNext = require('postcss-cssnext'),
+  MiniCssExtractPlugin = require("mini-css-extract-plugin"),
   DashboardPlugin = require('webpack-dashboard/plugin'),
   HtmlWebpackPlugin = require('html-webpack-plugin');
 
@@ -44,10 +45,7 @@ module.exports = merge(common, {
   },
   module:{
     rules:[{
-      test: /\.css$/,
-      use: ['style-loader','css-loader']
-    },{
-      test: /\.scss$/,
+      test: /\.(sa|sc|c)ss$/,
       use: [{
         loader: 'style-loader',
       },{
@@ -73,12 +71,37 @@ module.exports = merge(common, {
           ]
         }
       }]
+    },{
+      test: require.resolve('jquery'),
+      use: [{
+        loader: 'expose-loader',
+        options: 'jQuery'
+      },{
+        loader: 'expose-loader',
+        options: '$'
+      }]
+    },{
+      test: require.resolve('lodash'),
+      use: [{
+        loader: 'expose-loader',
+        options: '_'
+      }]
+    },{
+      test: require.resolve('bootstrap'),
+      use: [{
+        loader: 'expose-loader',
+        options: 'bootstrap'
+      }]
     }]
   },
   plugins: [
-    new HtmlWebpackPlugin({title: 'Document'}),  
+    new MiniCssExtractPlugin({
+      filename: '[name].css',
+      chunkFilename: '[id].css',
+    }),  
+    new HtmlWebpackPlugin({title: 'Json Form'}),  
     new DashboardPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.HotModuleReplacementPlugin()
-  ]
+  ]  
 });

@@ -6,7 +6,7 @@
           <h4 class="c-grey-900">Document</h4>
           <span class="modified">-- modified </span>
           <div class="btn-group">
-            <button type="button" class="save btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#new-document">Save as ...</button>
+            <button type="button" class="save btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#save-as">Save as ...</button>
             <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               <span class="sr-only">Toggle Dropdown</span>
             </button>
@@ -14,7 +14,7 @@
               <a class="dropdown-item save-as" href="javascript:void(0)">Save as ...</a>
               <a class="dropdown-item discard" href="javascript:void(0)">Discard modification </a>
             </div>
-            <div class="modal fade" id="new-document" tabindex="-1" role="dialog" aria-labelledby="new-document" aria-hidden="true">
+            <div class="modal fade" id="save-as" tabindex="-1" role="dialog" aria-labelledby="save-as" aria-hidden="true">
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
                   <div class="modal-header">
@@ -24,9 +24,24 @@
                     </button>
                   </div>
                   <div class="modal-body">
-                    <form class="new-document">
+                    <form class="save-as">
                       <div class="form-group">
-                        <label for="title">Document Title</label>
+                        <label for="domain">Domain</label>
+                        <div class="domain" name="title"/>
+                        <span class="messages"></span>
+                      </div>
+                      <div class="form-group">
+                        <label for="collection">Collection</label>
+                        <div class="collection" name="collection"/>
+                        <span class="messages"></span>
+                      </div>
+                      <div class="form-group">
+                        <label for="id">ID</label>
+                        <input type="text" class="form-control" name="id" aria-describedby="docHelp" placeholder="Enter id of document">
+                        <span class="messages"></span>
+                      </div>
+                      <div class="form-group">
+                        <label for="title">Title</label>
                         <input type="text" class="form-control" name="title" aria-describedby="docHelp" placeholder="Enter title of document">
                         <span class="messages"></span>
                       </div>

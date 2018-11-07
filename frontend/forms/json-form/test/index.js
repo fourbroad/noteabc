@@ -1,29 +1,7 @@
 import './index.scss';
-import 'bootstrap';
 
-var pluginIdent, pluginChunk, loadPlugin;
-
-pluginIdent = function(pluginUri) {
-  return '_' + pluginUri.replace(/[\.,-]/g,'_');
-};
-
-pluginChunk = function(pluginUri, name) {
-  return '/' + name + '.bundle.js'
-};
-
-loadPlugin = function(pluginUri, name, callback) {
-  var script = document.createElement('script');
-  var _pluginIdent = pluginIdent(pluginUri);
-  script.type = 'text/javascript';
-  script.charset = 'utf-8';
-  script.src = pluginChunk(pluginUri, name);
-  script.onload = function () {
-    document.head.removeChild(script);
-    callback && callback(window[_pluginIdent]);
-    delete window[_pluginIdent];
-  }
-  document.head.appendChild(script);
-};
+import Loader from '@notesabc/loader';
+import Client from '@notesabc/frontend-client'
 
 $('body').css({
   position: 'absolute',
@@ -32,20 +10,27 @@ $('body').css({
   margin: 0
 });
 
-loadPlugin("notesabc-forms-json-form", "json-form", function(module){
-  var Json = module.default;
-  Json.create({
-    $container:$('body'),
-    form: null,
-    document: {
-      title: 'Hello world!',
-      'array': [1, 2, 3],
-      'boolean': true,
-      'color': '#82b92c',
-      'null': null,
-      'number': 123,
-      'object': {'a': 'b', 'c': 'd'},
-      'string': 'Hello World'
-    }
+Client.login("administrator","!QAZ)OKM", function(err1, client){
+  if(err1) return console.log(err1);  
+  window.client = client;
+  client.getDomain('localhost',function(err2, domain){
+    if(err2) return console.log(err2);
+    window.currentDomain = domain;
+    domain.getForm('json-form', function(err3, doc){
+      if(err3) return console.log(err3);
+      var formId = doc.getFormId()||'json-form';
+      domain.getForm(formId, function(err4, form){
+        if(err4) return console.log(err4);
+         Loader.load(form.plugin, function(module){
+          var JsonForm = module.default;
+          JsonForm.create({
+            client: client,
+            $container:$('body'),
+            form: form,
+            document: doc
+          });
+         });
+      });
+    });
   });
 });

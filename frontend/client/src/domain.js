@@ -10,6 +10,7 @@
   white  : true
  */
 
+import Document from './document';
 import Collection from './collection';
 import View from './view';
 import Form from './form';
@@ -23,7 +24,37 @@ import _ from 'lodash';
 
 var Domain = {
   create : function(socket, domainData){
-  	var domain = {
+  	var proto = {
+
+      getDomainId: function(){
+      	return "localhost";
+      },
+
+      getCollectionId: function(){
+      	return ".domains";
+      },
+
+      saveAs: function(){
+      	var id, title, newDomain =  _.cloneDeep(this);
+        if(arguments.length == 2 && typeof arguments[1] == 'function'){
+	      id = arguments[0];
+	      title = newDomain.title;
+	      callback = arguments[1];
+	    } else if(arguments.length == 3 && typeof arguments[2] == 'function'){
+	      id = arguments[0];
+	      title = arguments[1];
+	      callback = arguments[2];
+	    } else {
+	      throw new Error('Number or type of Arguments is not correct!');
+	    }
+
+      	newDomain.title = title;
+      	delete newDomain.id;
+      	socket.emit('createDomain', id, newDomain, function(err, domainData){
+      	  callback(err, err ? null : Domain.create(socket, domainData));
+      	});      	
+      },
+
       createCollection: function(){
   	    const domainId = this.id;
   	    var collectionId, collectionRaw, callback; 
@@ -64,6 +95,21 @@ var Domain = {
 	    });
       },
 
+      distinctQueryCollections: function(field, wildcard, callback){
+   	    var query = {
+          collapse:{field: field + '.keyword'},
+          aggs:{itemCount:{cardinality:{field: field+'.keyword'}}}
+//          _source:[field]
+        };
+
+        if(wildcard){
+          query.query = {wildcard:{}};
+          query.query.wildcard[field+".keyword"] = wildcard;
+        }
+
+        this.findCollections(query, callback);
+      },
+
       getDocument: function(collectionId, documentId, callback){
         const domainId = this.id;
     	socket.emit('getDocument', domainId, collectionId, documentId, function(err, docData) {
@@ -71,7 +117,7 @@ var Domain = {
     
           switch(docData._metadata.type){
           	case 'domain':
-          	  callback(null, create(socket, docData));
+          	  callback(null, Domain.create(socket, docData));
           	  break;
             case 'collection':
               callback(null, Collection.create(socket, domainId, docData));
@@ -113,7 +159,7 @@ var Domain = {
     	} else {
     	  throw new Error('Number or type of Arguments is not correct!');
     	}
-	    
+
     	socket.emit('createView', domainId, viewId, viewRaw, function(err, viewData){
     	  callback(err, err ? null : View.create(socket, domainId, viewData));	  
     	});
@@ -153,8 +199,8 @@ var Domain = {
 	      throw new Error('Number or type of Arguments is not correct!');
 	    }
 	    
-	    socket.emit('createView', domainId, formId, formRaw, function(err, formData){
-	      callback(err, err ? null : View.create(socket, domainId, formData));	  
+	    socket.emit('createForm', domainId, formId, formRaw, function(err, formData){
+	      callback(err, err ? null : Form.create(socket, domainId, formData));	  
 	    });
       },
   
@@ -178,18 +224,6 @@ var Domain = {
 
       createRole: function(roleId, roleRaw, callback){
         const domainId = this.id;
-	    if(arguments.length == 2 && typeof arguments[1] == 'function'){
-	      roleId = uuidv4();
-	      roleRaw = arguments[0];
-	      callback = arguments[1];
-	    } else if(arguments.length == 3 && typeof arguments[2] == 'function'){
-	      roleId = arguments[0];
-	      roleRaw = arguments[1];
-	      callback = arguments[2];
-	    } else {
-	      throw new Error('Number or type of Arguments is not correct!');
-	    }
-	    
 	    socket.emit('createRole', domainId, roleId, roleRaw, function(err, roleData){
 	      callback(err, err ? null : Role.create(socket, domainId, roleData));	  
 	    });
@@ -324,13 +358,13 @@ var Domain = {
     	  callback(null, true);	  
     	});
       },
-		  
+
       remove: function(callback){
         socket.emit('removeDomain', this.id, function(err, result){
     	  callback(err, result);	  
     	});
       },
-		  
+
       getACL: function(callback) {
         socket.emit('getDomainACL', this.id, function(err, acl) {
     	  callback(err, acl);
@@ -353,12 +387,17 @@ var Domain = {
         socket.emit('domainGarbageCollection', this.id, function(err, result){
     	  callback(err, result);	  
         });
+      },
+
+      getFormId: function(){
+      	return this._metadata.formId;
       }
+
   	};
 
-  	_.merge(domain, domainData);
-
-  	return domain;
+  	function constructor(){};
+  	_.merge(constructor.prototype, proto);
+  	return _.merge(new constructor(), domainData);
   }
 };
 

@@ -1,5 +1,4 @@
-// @import "~bootstrap/scss/bootstrap";
-
+@import '~jsoneditor/dist/jsoneditor.css';
 
 .json-form {
   padding: 20px;
@@ -16,6 +15,16 @@
       border-color: lightgray;
       border-radius: 0.2rem;
     }
+  }
+
+  .domain {
+    width: 100%;
+    border-radius: 0.2rem;
+  }
+
+  .collection {
+    width: 100%;
+    border-radius: 0.2rem;
   }
 
   .json-form-toolbox {
