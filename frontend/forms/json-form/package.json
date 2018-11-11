@@ -1,6 +1,6 @@
 {
   "name": "@notesabc/json-form",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "",
   "main": "test/index.js",
   "module": "src/json-form.js",
@@ -19,7 +19,7 @@
     "@fortawesome/fontawesome-free": "^5.4.2",
     "@notesabc/frontend-client": "^1.0.11",
     "@notesabc/loader": "^1.0.4",
-    "@notesabc/select": "^1.0.12",
+    "@notesabc/select": "^1.0.15",
     "JSV": "^4.0.2",
     "babel-polyfill": "^6.26.0",
     "bootstrap": "^4.1.3",

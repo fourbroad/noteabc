@@ -1,6 +1,6 @@
 {
   "name": "@notesabc/select",
-  "version": "1.0.12",
+  "version": "1.0.15",
   "description": "",
   "main": "test/index.js",
   "module": "src/select.js",
@@ -32,6 +32,7 @@
     "validate.js": "^0.12.0"
   },
   "devDependencies": {
+    "autoprefixer": "^9.3.1",
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.0.1",
     "babel-loader": "^7.1.2",

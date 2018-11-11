@@ -1,7 +1,3 @@
-import * as $ from 'jquery';
-import _ from 'lodash';
-import 'bootstrap';
-
 import './select.scss';
 import selectHtml from './select.html';
 

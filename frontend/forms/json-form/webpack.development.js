@@ -12,7 +12,8 @@ module.exports = merge(common, {
   mode: 'development',  
   devtool: 'inline-source-map',
   entry: {
-    index: './test/index.js'
+    context: ['jquery', 'bootstrap', 'lodash'],
+    index: './test/index.js'    
   },
   output: {
     filename: '[name].bundle.js',
@@ -86,12 +87,6 @@ module.exports = merge(common, {
         loader: 'expose-loader',
         options: '_'
       }]
-    },{
-      test: require.resolve('bootstrap'),
-      use: [{
-        loader: 'expose-loader',
-        options: 'bootstrap'
-      }]
     }]
   },
   plugins: [
@@ -99,7 +94,7 @@ module.exports = merge(common, {
       filename: '[name].css',
       chunkFilename: '[id].css',
     }),  
-    new HtmlWebpackPlugin({title: 'Json Form'}),  
+    new HtmlWebpackPlugin({title:'Notesabc Json Form'}),
     new DashboardPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.HotModuleReplacementPlugin()

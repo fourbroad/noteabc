@@ -35,17 +35,5 @@ module.exports = {
         }
       }]      
     }]
-  },
-  plugins: [
-    new webpack.ProvidePlugin({
-      $: 'jquery',
-      jQuery: 'jquery',
-      'window.jQuery': 'jquery',
-      _: 'lodash',
-      'window._': 'lodash',
-      moment: 'moment',
-      'window.moment': 'moment',
-      Popper: ['popper.js', 'default']      
-    })
-  ]
+  }
 };

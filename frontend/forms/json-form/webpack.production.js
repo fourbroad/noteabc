@@ -80,13 +80,18 @@ module.exports = merge(common, {
       }]
     }]
   },
-//  externals: {
-//    bootstrap: {
-//      commonjs: 'bootstrap',
-//      commonjs2: 'bootstrap',
-//      amd: 'bootstrap'
-//    }
-//  },  
+  externals: {
+    jquery: {
+      commonjs: 'jquery',
+      commonjs2: 'jquery',
+      amd: 'jquery'
+    },
+    lodash: {
+      commonjs: 'lodash',
+      commonjs2: 'lodash',
+      amd: 'lodash'
+    }
+  },
   plugins: [
     new MiniCssExtractPlugin({
       filename: '[name].bundle.css',

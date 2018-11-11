@@ -135,7 +135,7 @@ var Domain = {
               callback(null, Profile.create(socket, domainId, docData));
               break;
             case 'user':
-              callback(null, View.create(socket, docData));
+              callback(null, User.create(socket, docData));
               break;
             default:
               callback(null, Document.create(socket, domainId, collectionId, docData));

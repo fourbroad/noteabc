@@ -81,11 +81,6 @@ module.exports = merge(common, {
     }]
   },
   externals: {
-    bootstrap: {
-      commonjs: 'bootstrap',
-      commonjs2: 'bootstrap',
-      amd: 'bootstrap'
-    },
     jquery: {
       commonjs: 'jquery',
       commonjs2: 'jquery',

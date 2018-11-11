@@ -1,11 +1,11 @@
-import './index.scss';
-
-import * as $ from 'jquery';
-import _ from 'lodash';
-import 'bootstrap';
+// import * as $ from 'jquery';
+// import _ from 'lodash';
+// import 'bootstrap';
 
 import Client from '@notesabc/frontend-client'
 import Select from 'select';
+
+import './index.scss';
 
 Client.login("administrator","!QAZ)OKM", function(err1, client){
   if(err1) return console.log(err1);  

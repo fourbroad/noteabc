@@ -12,6 +12,7 @@ module.exports = merge(common, {
   mode: 'development',  
   devtool: 'inline-source-map',
   entry: {
+    context: ['jquery', 'bootstrap', 'lodash'],
     index: './test/index.js'
   },
   output: {
@@ -86,15 +87,12 @@ module.exports = merge(common, {
         loader: 'expose-loader',
         options: '_'
       }]
-    },{
-      test: require.resolve('bootstrap'),
-      use: [{
-        loader: 'expose-loader',
-        options: 'bootstrap'
-      }]
     }]
   },
   plugins: [
+    new webpack.ProvidePlugin({
+      Popper: ['popper.js', 'default']      
+    }),
     new MiniCssExtractPlugin({
       filename: '[name].css',
       chunkFilename: '[id].css',
@@ -117,3 +115,4 @@ module.exports = merge(common, {
     new webpack.HotModuleReplacementPlugin()
   ]  
 });
+

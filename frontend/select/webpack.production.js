@@ -1,11 +1,11 @@
-const 
+const
   path = require('path'),
   webpack = require('webpack'),
   merge = require('webpack-merge'),
   common = require('./webpack.common.js'),
   cssNext = require('postcss-cssnext'),
   MiniCssExtractPlugin = require("mini-css-extract-plugin"),
-  UglifyJsPlugin = require('uglifyjs-webpack-plugin'),  
+  UglifyJsPlugin = require('uglifyjs-webpack-plugin'),
   CleanWebpackPlugin = require('clean-webpack-plugin'),
   ImageminPlugin    = require('imagemin-webpack-plugin').default,
   OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
@@ -65,7 +65,12 @@ module.exports = merge(common, {
         loader: 'postcss-loader',
         options: {
           sourceMap: false,
-          plugins: () => [cssNext()]
+//          plugins: () => [cssNext()]
+          plugins: function () {
+            return [
+              require('autoprefixer')
+            ];
+          }
         }
       },{
         loader: 'sass-loader',
@@ -79,23 +84,6 @@ module.exports = merge(common, {
         }
       }]
     }]
-  },
-  externals: {
-    bootstrap: {
-      commonjs: 'bootstrap',
-      commonjs2: 'bootstrap',
-      amd: 'bootstrap'
-    },
-    jquery: {
-      commonjs: 'jquery',
-      commonjs2: 'jquery',
-      amd: 'jquery'
-    },
-    lodash: {
-      commonjs: 'lodash',
-      commonjs2: 'lodash',
-      amd: 'lodash'
-    }
   },  
   plugins: [
     new MiniCssExtractPlugin({

@@ -1,6 +1,6 @@
 {
   "name": "@notesabc/frontend-client",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "",
   "main": "dist/client.bundle.js",
   "module": "src/client.js",

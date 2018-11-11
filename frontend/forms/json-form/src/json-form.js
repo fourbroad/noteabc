@@ -1,7 +1,3 @@
-import * as $ from 'jquery';
-import _ from 'lodash';
-import 'bootstrap';
-
 import validate from "validate.js";
 import jsonPatch from "fast-json-patch";
 import uuidv4 from 'uuid/v4';
@@ -63,7 +59,7 @@ function create(opts){
     if(_isDirty()){
       document.patch(jsonPatch.compare(document, newDocument), function(err, result){
         if(err) return console.log(err);
-        newDocument = _.cloneDeep(document)        
+        document = _.cloneDeep(newDocument);
         _refreshHeader();
       });
     }
