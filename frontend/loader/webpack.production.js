@@ -10,9 +10,6 @@ const
   ImageminPlugin    = require('imagemin-webpack-plugin').default,
   OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 
-const name = '@notesabc/loader';
-const identity = "_" + name.replace(/[\.,@,/,-]/g,'_');
-
 module.exports = merge(common, {
   mode: 'production',
   devtool: 'source-map',
@@ -21,10 +18,7 @@ module.exports = merge(common, {
   },
   output: {
     filename: '[name].bundle.js',
-    path: path.resolve(__dirname, 'dist'),
-    publicPath: 'http://localhost:8088/@notesabc/loader/',
-    library: identity,
-    libraryTarget: 'umd'
+    path: path.resolve(__dirname, 'dist')
   },
   devServer: {
     contentBase : path.join(__dirname, 'dist'),

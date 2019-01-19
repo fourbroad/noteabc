@@ -1,0 +1,38 @@
+@import '~jsoneditor/dist/jsoneditor.css';
+
+.nm-jsonform {
+  padding: 20px;
+
+  .json-form-header {
+    border-bottom: 1px solid lightgray;
+    margin-bottom: 10px;
+    
+    h4 {
+      display: inline-block;
+    }
+
+    .btn {
+      border-color: lightgray;
+      border-radius: 0.2rem;
+    }
+  }
+
+  .domain {
+    width: 100%;
+    border-radius: 0.2rem;
+  }
+
+  .collection {
+    width: 100%;
+    border-radius: 0.2rem;
+  }
+
+  .json-form-toolbox {
+
+  }
+
+  .json-form-content {
+
+  }  
+
+}

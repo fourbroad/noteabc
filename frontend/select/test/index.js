@@ -1,7 +1,3 @@
-// import * as $ from 'jquery';
-// import _ from 'lodash';
-// import 'bootstrap';
-
 import Client from '@notesabc/frontend-client'
 import Select from 'select';
 
@@ -15,8 +11,7 @@ Client.login("administrator","!QAZ)OKM", function(err1, client){
     window.currentDomain = domain;
     domain.getView('.views', function(err3, view){
       if(err3) return console.log(err3);
-      Select.create({
-        $container: $('#container'),
+      $('<div/>').appendTo('body').select({
         title: 'domain',
         mode: 'multi',
         menuItems: function(filter, callback){

@@ -133,7 +133,6 @@ login = function(){
   socket.on('connect', function(){
     if(!userId){
       callback(null, _createClient(null, socket, User.create(socket, {id: 'anonymous', name: 'Anonymous'})));
-	  socket.disconnect();
     }else {
       socket.emit('login', userId, password, function(err, token, userData){
 	    var newSocket;

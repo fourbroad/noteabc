@@ -12,7 +12,7 @@ module.exports = merge(common, {
   mode: 'development',  
   devtool: 'inline-source-map',
   entry: {
-    context: ['jquery', 'bootstrap', 'lodash'],
+    context: ['jquery', 'jquery-ui/ui/widget', 'bootstrap', 'lodash'],
     index: './test/index.js'
   },
   output: {
@@ -97,19 +97,7 @@ module.exports = merge(common, {
       filename: '[name].css',
       chunkFilename: '[id].css',
     }),
-    new HtmlWebpackPlugin({
-      template: path.join(__dirname, 'test/index.html'),
-      path: path.join(__dirname, 'dist'),
-      filename: 'index.html',
-      inject: true,
-      minify: {
-        collapseWhitespace: true,
-        minifyCSS: true,
-        minifyJS: true,
-        removeComments: true,
-        useShortDoctype: true
-      },
-    }),    
+    new HtmlWebpackPlugin({title:'Notesabc Select'}),
     new DashboardPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.HotModuleReplacementPlugin()

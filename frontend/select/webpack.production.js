@@ -5,7 +5,6 @@ const
   common = require('./webpack.common.js'),
   cssNext = require('postcss-cssnext'),
   MiniCssExtractPlugin = require("mini-css-extract-plugin"),
-  UglifyJsPlugin = require('uglifyjs-webpack-plugin'),
   CleanWebpackPlugin = require('clean-webpack-plugin'),
   ImageminPlugin    = require('imagemin-webpack-plugin').default,
   OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
@@ -84,7 +83,19 @@ module.exports = merge(common, {
         }
       }]
     }]
-  },  
+  },
+  externals: {
+    jquery: {
+      commonjs: 'jquery',
+      commonjs2: 'jquery',
+      amd: 'jquery'
+    },
+    lodash: {
+      commonjs: 'lodash',
+      commonjs2: 'lodash',
+      amd: 'lodash'
+    }
+  },
   plugins: [
     new MiniCssExtractPlugin({
       filename: '[name].bundle.css',
@@ -93,25 +104,5 @@ module.exports = merge(common, {
     new CleanWebpackPlugin(['dist']),
     new ImageminPlugin(),
     new webpack.DefinePlugin({'process.env.NODE_ENV': JSON.stringify('production')})
-  ],
-  optimization: {
-//     minimizer: [
-//       new UglifyJsPlugin({
-//         cache: true,
-//         parallel: true,
-//         sourceMap: true // set to true if you want JS source maps
-//       }),
-//       new OptimizeCSSAssetsPlugin({})
-//     ],
-//     splitChunks: {
-//       cacheGroups: {
-//         styles: {
-//           name: 'styles',
-//           test: /\.(sa|sc|c)ss$/,
-//           chunks: 'all',
-//           enforce: true
-//         }
-//       }
-//     }
-  }  
+  ]
 });

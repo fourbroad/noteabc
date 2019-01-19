@@ -213,13 +213,13 @@ var Domain = {
 
       findForms: function(query, callback){
         const domainId = this.id;
-        socket.emit('findDomainFoms', domainId, query, function(err, formInfos){
-          if(err) return callback(err);
+        socket.emit('findForms', domainId, query, function(err, formInfos){
+          if(err) return callback(err); 
           var forms = _.map(formInfos.hits.hits, function(formInfo){
-      	    return Form.create(socket, domainId, formInfo._source);
-          });
-	      callback(null, {total:formInfos.hits.total, forms: forms});
-	    });
+          	return Form.create(socket, domainId, formInfo._source);
+          })
+    	  callback(null, {total:formInfos.hits.total, forms: forms});
+    	});
       },
 
       createRole: function(roleId, roleRaw, callback){
