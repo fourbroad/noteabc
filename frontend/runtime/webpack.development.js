@@ -105,6 +105,6 @@ module.exports = merge(common, {
     }),
     new DashboardPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
-    new webpack.HotModuleReplacementPlugin(),
+    new webpack.HotModuleReplacementPlugin()
   ]
 });

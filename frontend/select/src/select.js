@@ -1,3 +1,5 @@
+import 'jquery-ui/ui/widget';
+
 import './select.scss';
 import selectHtml from './select.html';
 

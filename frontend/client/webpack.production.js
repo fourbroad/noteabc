@@ -4,12 +4,11 @@ const
   merge = require('webpack-merge'),
   common = require('./webpack.common.js'),
   cssNext = require('postcss-cssnext'),
-  UglifyJSPlugin = require('uglifyjs-webpack-plugin'),  
-  CleanWebpackPlugin = require('clean-webpack-plugin'),
-  ImageminPlugin    = require('imagemin-webpack-plugin').default ;
+  MiniCssExtractPlugin = require("mini-css-extract-plugin"),  
+  CleanWebpackPlugin = require('clean-webpack-plugin');
 
-const bundleUri = 'com.notesabc.client';
-const bundleIdent = "_" + bundleUri.replace(/[\.,-]/g,'_');
+const name = '@notesabc/client';
+const identity = "_" + name.replace(/[\.,@,/,-]/g,'_');
 
 module.exports = merge(common, {
   mode: 'production',
@@ -19,11 +18,11 @@ module.exports = merge(common, {
   },
   output: {
     filename: '[name].bundle.js',
-    path: path.resolve(__dirname, 'dist'),
-    publicPath: '/plugins/' + bundleUri + '/dist/',
-    library: bundleIdent,
+    path: path.resolve(__dirname, '../../distributions/@notesabc/client'),
+    publicPath: '/@notesabc/client/',
+    library: identity,
     libraryTarget: 'umd'
-  },
+  },  
   devServer: {
     contentBase : path.join(__dirname, 'dist'),
     historyApiFallback : true,
@@ -50,12 +49,9 @@ module.exports = merge(common, {
   },
   module:{
     rules:[{
-      test: /\.css$/,
-      use: ['style-loader', "css-loader"]      
-    },{
-      test: /\.scss$/,
+      test: /\.(sa|sc|c)ss$/,
       use: [{
-        loader: 'style-loader',
+        loader: MiniCssExtractPlugin.loader,
       },{
         loader: 'css-loader',
         options: {
@@ -74,24 +70,15 @@ module.exports = merge(common, {
           sourceMap: false,
           includePaths: [
             path.join(__dirname, 'node_modules'),
-            path.join(__dirname,'src', 'assets', 'styles'),
-            path.join(__dirname,'src')
+            path.join(__dirname, 'src', 'assets', 'styles'),
+            path.join(__dirname, 'src')
           ]
         }
       }]
     }]
-  },
-  externals: {
-    bootstrap: {
-      commonjs: 'bootstrap',
-      commonjs2: 'bootstrap',
-      amd: 'bootstrap'
-    }
   },  
   plugins: [
     new CleanWebpackPlugin(['dist']),
-    new ImageminPlugin(),
-    new UglifyJSPlugin({sourceMap: true}),
     new webpack.DefinePlugin({'process.env.NODE_ENV': JSON.stringify('production')})
   ]
 });

@@ -10,13 +10,17 @@
  */
 
 
-import _ from 'lodash';
+const _ = require('lodash');
 
 'use strict';
 
 var Profile = {
-  create: function(socket, domainId, profileData) {
+  create: function(client, domainId, profileData) {
     var proto = {
+      getClient: function(){
+      	return client;
+      },
+          	
       getDomainId: function(){
       	return domainId;
       },
@@ -27,7 +31,7 @@ var Profile = {
 
       replace: function(profileRaw, callback) {
 	    const self = this;
-	    socket.emit('replaceProfile', domainId, this.id, profileRaw, function(err, profileData) {
+	    client.emit('replaceProfile', domainId, this.id, profileRaw, function(err, profileData) {
 	      if(err) return callback(err);
 
 	      for(var key in self) {
@@ -41,7 +45,7 @@ var Profile = {
   
       patch: function(patch, callback) {
 	    const self = this;
-	    socket.emit('patchProfile', domainId, this.id, patch, function(err, profileData) {
+	    client.emit('patchProfile', domainId, this.id, patch, function(err, profileData) {
 	      if(err) return callback(err);
 
 	      for(var key in self) {
@@ -54,31 +58,31 @@ var Profile = {
       },
   
       remove: function(callback) {
-	    socket.emit('removeProfile', domainId, this.id, function(err, result) {
+	    client.emit('removeProfile', domainId, this.id, function(err, result) {
 	      callback(err, result);	  
 	    });
       },
   
       getACL: function(callback) {
-	    socket.emit('getProfileACL', domainId, this.id, function(err, acl) {
+	    client.emit('getProfileACL', domainId, this.id, function(err, acl) {
 	      callback(err, acl);
 	    });
       },
 
       replaceACL: function(acl, callback) {
-	    socket.emit('replaceProfileACL', domainId, this.id, acl, function(err, result) {
+	    client.emit('replaceProfileACL', domainId, this.id, acl, function(err, result) {
 	      callback(err, result);
 	    });
       },
 
       patchACL: function(aclPatch, callback) {
-	    socket.emit('patchProfileACL', domainId, this.id, aclPatch, function(err, result) {
+	    client.emit('patchProfileACL', domainId, this.id, aclPatch, function(err, result) {
 	      callback(err, result);
 	    });
       },
   
       removePermissionSubject: function(acl, callback) {
-	    socket.emit('removeProfilePermissionSubject', domainId, this.id, acl, function(err, result) {
+	    client.emit('removeProfilePermissionSubject', domainId, this.id, acl, function(err, result) {
 	      callback(err, result);
 	    });
       },
@@ -95,4 +99,4 @@ var Profile = {
   }
 };
 
-export {Profile as default};
+module.exports = Profile;

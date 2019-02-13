@@ -10,13 +10,17 @@
  */
 
 
-import _ from 'lodash';
+const _ = require('lodash');
 
 'use strict';
 
 var Role = {
-  create: function(socket, domainId, roleData) {
+  create: function(client, domainId, roleData) {
     var proto = {
+      getClient: function(){
+      	return client;
+      },
+          	
       getDomainId: function(){
       	return domainId;
       },
@@ -29,14 +33,14 @@ var Role = {
       	var newRole =  _.cloneDeep(this);
       	newRole.title = title;
       	delete newRole.id;
-	    socket.emit('createRole', domainId, id, newRole, function(err, roleData){
-	      callback(err, err ? null : Role.create(socket, domainId, roleData));	  
+	    client.emit('createRole', domainId, id, newRole, function(err, roleData){
+	      callback(err, err ? null : Role.create(client, domainId, roleData));	  
 	    });
       },
 
       replace: function(roleRaw, callback) {
 	    const self = this;
-	    socket.emit('replaceRole', domainId, this.id, roleRaw, function(err, roleData) {
+	    client.emit('replaceRole', domainId, this.id, roleRaw, function(err, roleData) {
 	      if(err) return callback(err);
 
 	      for(var key in self) {
@@ -50,7 +54,7 @@ var Role = {
   
       patch: function(patch, callback) {
 	    const self = this;
-	    socket.emit('patchRole', domainId, this.id, patch, function(err, roleData) {
+	    client.emit('patchRole', domainId, this.id, patch, function(err, roleData) {
 	      if(err) return callback(err);
 				  
 	      for(var key in self) {
@@ -63,31 +67,31 @@ var Role = {
       },
   
       remove: function(callback) {
-	    socket.emit('removeRole', domainId, this.id, function(err, result) {
+	    client.emit('removeRole', domainId, this.id, function(err, result) {
 	      callback(err, result);
 	    });
       },
   
       getACL: function(callback) {
-	    socket.emit('getRoleACL', domainId, this.id, function(err, acl) {
+	    client.emit('getRoleACL', domainId, this.id, function(err, acl) {
 	      callback(err, acl);
 	    });
       },
 
       replaceACL: function(acl, callback) {
-	    socket.emit('replaceRoleACL', domainId, this.id, acl, function(err, result) {
+	    client.emit('replaceRoleACL', domainId, this.id, acl, function(err, result) {
 	      callback(err, result);
 	    });
       },
 
       patchACL: function(aclPatch, callback) {
-	    socket.emit('patchRoleACL', domainId, this.id, aclPatch, function(err, result) {
+	    client.emit('patchRoleACL', domainId, this.id, aclPatch, function(err, result) {
 	      callback(err, result);
 	    });
       },
   
       removePermissionSubject: function(acl, callback) {
-	    socket.emit('removeRolePermissionSubject', domainId, this.id, acl, function(err, result) {
+	    client.emit('removeRolePermissionSubject', domainId, this.id, acl, function(err, result) {
 	      callback(err, result);
 	    });
       },
@@ -104,4 +108,4 @@ var Role = {
   }
 };
 
-export {Role as default};
+module.exports = Role;

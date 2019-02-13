@@ -4,13 +4,6 @@ function setCurrentDomain(domainId){
     console.log('Domain:');
     console.log(domain);
     window.domain = domain;
-
-    domain.getCollection('.views', function(err1, viewCollection){
-      if(err1) return console.log(err1);
-      console.log('View Collection:');
-      console.log(viewCollection);
-      window.viewCollection = viewCollection;
-    });
   });
 };
 
@@ -179,6 +172,12 @@ currentDomain.getView(".files",function(err,view){
 });
 
 
+currentDomain.getCollection('.views', function(err1, viewCollection){
+  if(err1) return console.log(err1);
+  console.log('View Collection:');
+  console.log(viewCollection);
+  window.viewCollection = viewCollection;
+});
 
 viewCollection.findDocuments({}, function(err, views){window.views = views.documents;});
 
@@ -186,13 +185,30 @@ _.each(views, function(view){
   view.patch([{op:'add',path:'/search', value:{names:['id.keyword','title.keyword', 'collections.keyword','_metadata.author.keyword']}}], function(err, result){console.log(arguments);});
 });
 
-currentDomain.createForm('json-form',{
-  title: 'Json Form',
+currentDomain.createForm('form',{
+  title: 'Form',
   plugin:{
-    name: '@notesabc/json-form',
-    js: '/@notesabc/json-form/json-form.bundle.js',
-    css: '@notesabc/json-form/json-form.bundle.css'
+    name: '@notesabc/form',
+    js: '@notesabc/form/form.bundle.js',
+    css: '@notesabc/form/form.bundle.css'
   }
 },function(err, form){
   console.log(arguments);
+});
+
+currentDomain.getView('.files', function(err1, fileView){
+  console.log(arguments);
+  fileView.patch([{
+    op:'add', 
+    path:'/actions',
+    value:[{
+      label:'Upload Files', 
+      plugin:{
+        name:'uploadfiles',
+        js:'@notesabc/upload-files/upload-files.bundle.js',
+        css:'@notesabc/upload-files/upload-files.bundle.css'
+      }
+  }]}], function(err2, result){
+    console.log(arguments);
+  });
 });

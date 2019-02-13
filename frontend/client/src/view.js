@@ -9,14 +9,17 @@
   white  : true
  */
 
-import _ from 'lodash';
-import Document from './document';
+const _ = require('lodash'), Document = require('./document');
 
 'use strict';
 
 var View = {
-  create: function(socket, domainId, viewData) {
+  create: function(client, domainId, viewData) {
     var proto = {
+      getClient: function(){
+      	return client;
+      },
+          	
       getDomainId: function(){
       	return domainId;
       },
@@ -46,14 +49,14 @@ var View = {
 
       	newView.title = title;
       	delete newView.id;
-    	socket.emit('createView', domainId, id, newView, function(err, viewData){
-    	  callback(err, err ? null : View.create(socket, domainId, viewData));
+    	client.emit('createView', domainId, id, newView, function(err, viewData){
+    	  callback(err, err ? null : View.create(client, domainId, viewData));
     	});
       },
 
       replace: function(viewRaw, callback) {
 	    const self = this;
-	    socket.emit('replaceView', domainId, this.id, viewRaw, function(err, viewData) {
+	    client.emit('replaceView', domainId, this.id, viewRaw, function(err, viewData) {
 	      if(err) return callback(err);
 
 	      for(var key in self) {
@@ -67,7 +70,7 @@ var View = {
   
       patch: function(patch, callback) {
 	    const self = this;
-	    socket.emit('patchView', domainId, this.id, patch, function(err, viewData) {
+	    client.emit('patchView', domainId, this.id, patch, function(err, viewData) {
 	      if(err) return callback(err);
 
 	      for(var key in self) {
@@ -80,42 +83,42 @@ var View = {
       },
   
       remove: function(callback) {
-        socket.emit('removeView', domainId, this.id, function(err, result) {
+        client.emit('removeView', domainId, this.id, function(err, result) {
 	      callback(err, result);	  
          });
       },
 
       getACL: function(callback) {
-	    socket.emit('getViewACL', domainId, this.id, function(err, acl) {
+	    client.emit('getViewACL', domainId, this.id, function(err, acl) {
 	      callback(err, acl);
 	    });
       },
   
       replaceACL: function(acl, callback) {
-	    socket.emit('replaceViewACL', domainId, this.id, acl, function(err, result) {
+	    client.emit('replaceViewACL', domainId, this.id, acl, function(err, result) {
 	      callback(err, result);
 	    });
       },
   
       patchACL: function(aclPatch, callback) {
-	    socket.emit('patchViewACL', domainId, this.id, aclPatch, function(err, result) {
+	    client.emit('patchViewACL', domainId, this.id, aclPatch, function(err, result) {
 	      callback(err, result);
 	    });
       },
   
       removePermissionSubject: function(acl, callback) {
-	    socket.emit('removeViewPermissionSubject', domainId, this.id, acl, function(err, result) {
+	    client.emit('removeViewPermissionSubject', domainId, this.id, acl, function(err, result) {
 	      callback(err, result);
 	    });
       },
 
       findDocuments: function(query, callback) {
         const viewId = this.id;
-	    socket.emit('findViewDocuments', domainId, viewId, query, function(err, docsData) {
+	    client.emit('findViewDocuments', domainId, viewId, query, function(err, docsData) {
           if(err) return callback(err);
 
           var documents = _.map(docsData.hits.hits, function(docData){
-      	    return Document.create(socket, domainId, docData._index.split('~')[1], docData._source);
+      	    return Document.create(client, domainId, docData._index.split('~')[1], docData._source);
           });
 
 	      callback(null, {total:docsData.hits.total, documents: documents});
@@ -138,7 +141,7 @@ var View = {
       },
 
       refresh: function(callback) {
-        socket.emit('refreshView', domainId, this.id, function(err, result) {
+        client.emit('refreshView', domainId, this.id, function(err, result) {
 	      callback(err, result);
 	    });
       },
@@ -155,4 +158,4 @@ var View = {
   }
 };
 
-export {View as default};
+module.exports = View;

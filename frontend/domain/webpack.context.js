@@ -4,20 +4,18 @@ const
   merge = require('webpack-merge'),
   common = require('./webpack.common.js'),
   cssNext = require('postcss-cssnext'),
-  CleanWebpackPlugin = require('clean-webpack-plugin'),  
   HtmlWebpackPlugin = require('html-webpack-plugin'),
   DashboardPlugin = require('webpack-dashboard/plugin');
 
 module.exports = merge(common, {
   mode: 'production',
-  devtool: 'inline-source-map',
+  devtool: 'source-map',
   entry: {
-    context: ['jquery', 'jquery-ui/ui/widget', 'jquery-ui/ui/data', 'lodash', 'moment', 'jquery.urianchor', 'jquery.event.gevent', 'jquery.event.ue']
+    context: ['jquery', 'jquery-ui/ui/widget', 'jquery-ui/ui/data', 'bootstrap', 'lodash', 'moment', 'jquery.urianchor', 'jquery.event.gevent', 'jquery.event.ue']
   },
   output: {
     filename: '[name].bundle.js',
     library: '[name]'
-//     path: path.resolve(__dirname, 'dist')
   },
   module:{
     rules:[{
@@ -71,7 +69,7 @@ module.exports = merge(common, {
     }]
   },
   plugins: [
-    new CleanWebpackPlugin([path.resolve(__dirname, 'dist')]),  
+//     new CleanWebpackPlugin([path.resolve(__dirname, 'dist')]),  
     new webpack.DllPlugin({
       path: 'manifest.json',
       name: '[name]',

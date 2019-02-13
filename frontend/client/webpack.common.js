@@ -17,14 +17,19 @@ module.exports = {
   module: {
     rules: [{
       test: /\.(eot|svg|ttf|otf|woff|woff2)$/,
-      exclude: /(node_modules)/,
+//       exclude: /(node_modules)/,
       use: ['file-loader']
     },{
       test: /\.(png|gif|jpg|svg)$/,
-      use: ['file-loader']      
+      use: [{
+        loader: 'file-loader',
+        options: {
+          outputPath: 'assets'
+        }
+      }]      
     },{
       test: /\.(js)$/,
-      exclude: /(node_modules)/,
+//       exclude: /(node_modules)/,
       use: ['babel-loader']
     },{
       test: /\.html$/,
@@ -33,21 +38,9 @@ module.exports = {
         options: {
           minimize: true
         }
-      }]      
+      }]
     }]
-  },
+  },  
   plugins: [
-    new webpack.ProvidePlugin({
-      $: 'jquery',
-      jQuery: 'jquery',
-      'window.jQuery': 'jquery',
-      _: 'lodash',
-      'window._': 'lodash',
-      moment: 'moment',
-      'window.moment': 'moment',
-      jiff: 'jiff',
-      'window.jiff': 'jiff',
-      Popper: ['popper.js', 'default']      
-    })
   ]
 };

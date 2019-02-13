@@ -1,14 +1,5 @@
-import * as $ from 'jquery';
-import 'jquery-ui/ui/widget';
-import 'bootstrap';
-import _ from 'lodash';
-import moment from 'moment';
-import Cookies from 'js-cookie';
-import 'font-awesome/scss/font-awesome.scss';
-import 'jquery.event.gevent';
-import 'jquery.event.ue';
-
-import 'upload-files';
+// import 'upload-files';
+import loader from '@notesabc/loader'
 
 import './index.scss';
 
@@ -17,11 +8,15 @@ import Client from '@notesabc/frontend-client';
 Client.login("administrator","!QAZ)OKM", function(err, client){
   if(err) return console.log(err);
 
-  Cookies.set('token', client.getToken());
-  
-  $('body').uploadfiles({
-    token: client.getToken(),
-    url: "http://localhost:8000/upload-files/"
+  loader.load({
+    name: "uploadfiles", 
+    js: "@notesabc/upload-files/upload-files.bundle.js",
+    css: '@notesabc/upload-files/upload-files.bundle.css'
+  }, function(Domain){
+    $('body').uploadfiles({
+      token: client.getToken(),
+      url: "http://localhost:8000/upload-files/"
+    });
   });
 
 });

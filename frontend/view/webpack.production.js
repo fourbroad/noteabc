@@ -20,8 +20,8 @@ module.exports = merge(common, {
   output: {
     filename: '[name].bundle.js',
     chunkFilename: '[name].bundle.js',
-    path: path.resolve(__dirname, 'dist'),
-    publicPath: 'http://localhost:8088/@notesabc/view/',
+    path: path.resolve(__dirname, '../../distributions/@notesabc/view/'),
+    publicPath: '/@notesabc/view/',
     library: identity,
     libraryTarget: 'umd'
   },
@@ -82,26 +82,23 @@ module.exports = merge(common, {
       }]
     }]
   },
-  externals: {
-    jquery: {
-      commonjs: 'jquery',
-      commonjs2: 'jquery',
-      amd: 'jquery'
-    },
-    lodash: {
-      commonjs: 'lodash',
-      commonjs2: 'lodash',
-      amd: 'lodash'
-    },
-    moment: {
-      commonjs: 'moment',
-      commonjs2: 'moment',
-      amd: 'moment'
-    }
-  },  
   plugins: [
-    new CleanWebpackPlugin(['dist']),
+//     new CleanWebpackPlugin(['dist']),
+    new webpack.ProvidePlugin({
+      $: 'jquery',
+      jQuery: 'jquery',
+      'window.jQuery': 'jquery',
+      'window.$': 'jquery',
+      moment: 'moment',
+      'window.moment': 'moment',
+      _: 'lodash',
+      'window._':'lodash',
+      Popper: ['popper.js', 'default']
+    }),
+    new webpack.DllReferencePlugin({
+      context: __dirname,
+      manifest: require('./manifest.json'),
+    }),  
     new ImageminPlugin(),
-    new webpack.DefinePlugin({'process.env.NODE_ENV': JSON.stringify('production')})    
-  ]
+    new webpack.DefinePlugin({'process.env.NODE_ENV': JSON.stringify('production')})  ]
 });

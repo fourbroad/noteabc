@@ -1,26 +1,6 @@
 .nm-view {
   .view-header {
 
-    .kv-avatar .krajee-default.file-preview-frame,.kv-avatar .krajee-default.file-preview-frame:hover {
-      margin: 0;
-      padding: 0;
-      border: none;
-      box-shadow: none;
-      text-align: center;
-    }
-    .kv-avatar {
-      display: inline-block;
-    }
-    .kv-avatar .file-input {
-      display: table-cell;
-      width: 120px;
-    }
-    .kv-reqd {
-      color: red;
-      font-family: monospace;
-      font-weight: normal;
-    }
-
     border-bottom: 1px solid lightgray;
     
     .btn {
@@ -43,26 +23,30 @@
     }
   }
 
-  .table {
-    .btn {
-      border: none;
-      visibility: hidden;
-    }
+  .dataTables_wrapper{
+    overflow: auto;
 
-    .table-active {
+    .view-table {
       .btn {
-        visibility: visible;
-      }      
-    }
+        border: none;
+        visibility: hidden;
+      }
+
+      .table-active {
+        .btn {
+          visibility: visible;
+        }      
+      }
     
-    tr:hover {
-      .btn {
-        visibility: visible;
-      }      
-    }
+      tr:hover {
+        .btn {
+          visibility: visible;
+        }      
+      }
 
-    a:hover {
-      text-decoration: underline;
+      a:hover {
+        text-decoration: underline;
+      }
     }
   }
 

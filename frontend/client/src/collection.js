@@ -9,16 +9,21 @@
  white  : true
  */
 
-import Document from './document';
-import Form from './form';
-import uuidv4 from 'uuid/v4';
-import _ from 'lodash';
+const
+  Document = require('./document'),
+  Form = require('./form'),
+  uuidv4 = require('uuid/v4'),
+  _ = require('lodash');
 
 'use strict';
 
 var Collection = {
-  create : function(socket, domainId, collectionData) {
+  create : function(client, domainId, collectionData) {
     var proto = {
+      getClient: function(){
+      	return client;
+      },
+
       getDomainId: function(){
       	return domainId;
       },
@@ -49,8 +54,8 @@ var Collection = {
       	newCollection.title = title;
       	delete newCollection.id;
 	   	
-	    socket.emit('createCollection', domainId, id, newCollection, function(err, collectionData){
-	      callback(err, err ? null : Collection.create(socket, domainId, collectionData));
+	    client.emit('createCollection', domainId, id, newCollection, function(err, collectionData){
+	      callback(err, err ? null : Collection.create(client, domainId, collectionData));
 	    });
       },
 
@@ -70,21 +75,21 @@ var Collection = {
 	      throw new Error('Number or type of Arguments is not correct!');
 	    }
 
-	    socket.emit('createDocument', domainId, collectionId, docId, docRaw, function(err, docData) {
-	      callback(err, err ? null : Document.create(socket, domainId, collectionId, docData));
+	    client.emit('createDocument', domainId, collectionId, docId, docRaw, function(err, docData) {
+	      callback(err, err ? null : Document.create(client, domainId, collectionId, docData));
 	    });
       },
   
       getDocument: function(docId, callback) {
 	    const collectionId = this.id;
-	    socket.emit('getDocument', domainId, collectionId, docId, function(err, docData) {
-	      callback(err, err ? null : Document.create(socket, domainId, collectionId, docData));
+	    client.emit('getDocument', domainId, collectionId, docId, function(err, docData) {
+	      callback(err, err ? null : Document.create(client, domainId, collectionId, docData));
 	    });
       },
 
       replace: function(collectionRaw, callback) {
 	    const self = this, collectionId = this.id;
-	    socket.emit('replaceCollection', domainId, collectionId, collectionRaw, function(err, cd) {
+	    client.emit('replaceCollection', domainId, collectionId, collectionRaw, function(err, cd) {
 	      if(err) return callback(err);
 		  
 	      for(var key in self) {
@@ -98,7 +103,7 @@ var Collection = {
   
       patch: function(patch, callback) {
 	    const self = this, collectionId = this.id;
-	    socket.emit('patchCollection', domainId, collectionId, patch, function(err, cd) {
+	    client.emit('patchCollection', domainId, collectionId, patch, function(err, cd) {
 	      if(err) return callback(err);
 			  
 	      for(var key in self) {
@@ -112,42 +117,42 @@ var Collection = {
       },
 
       remove: function(callback) {
-	    socket.emit('removeCollection', domainId, this.id, function(err, result){
+	    client.emit('removeCollection', domainId, this.id, function(err, result){
 	      callback(err, result);
 	    });
       },
 
       getACL: function(callback) {
-	    socket.emit('getCollectionACL', domainId, this.id, function(err, acl) {
+	    client.emit('getCollectionACL', domainId, this.id, function(err, acl) {
 	      callback(err, acl);
 	    });
       },
   
       replaceACL: function(acl, callback) {
-	    socket.emit('replaceCollectionACL', domainId, this.id, acl, function(err, result) {
+	    client.emit('replaceCollectionACL', domainId, this.id, acl, function(err, result) {
 	      callback(err, result);
 	    });
       },
 	  
       patchACL: function(aclPatch, callback) {
-	    socket.emit('patchCollectionACL', domainId, this.id, aclPatch, function(err, result) {
+	    client.emit('patchCollectionACL', domainId, this.id, aclPatch, function(err, result) {
 	      callback(err, result);
 	    });
       },
   
       removePermissionSubject: function(acl, callback) {
-	    socket.emit('removeCollectionPermissionSubject', domainId, this.id, acl, function(err, result) {
+	    client.emit('removeCollectionPermissionSubject', domainId, this.id, acl, function(err, result) {
 	      callback(err, result);
 	    });
       },
 
       findDocuments: function(query, callback) {
         const collectionId = this.id;
-	    socket.emit('findCollectionDocuments', domainId, collectionId, query, function(err, docsData) {
+	    client.emit('findCollectionDocuments', domainId, collectionId, query, function(err, docsData) {
           if(err) return callback(err);
 
           var documents = _.map(docsData.hits.hits, function(docData){
-      	    return Document.create(socket, domainId, collectionId, docData._source);
+      	    return Document.create(client, domainId, collectionId, docData._source);
           });
 
 	      callback(null, {total:docsData.hits.total, documents: documents});
@@ -156,17 +161,17 @@ var Collection = {
 
       findForms: function(query, callback){
         const collectionId = this.id;
-        socket.emit('findCollectionFoms', domainId, collectionId, query, function(err, formInfos){
+        client.emit('findCollectionFoms', domainId, collectionId, query, function(err, formInfos){
           if(err) return callback(err);
           var forms = _.map(formInfos.hits.hits, function(formInfo){
-      	    return Form.create(socket, domainId, formInfo._source);
+      	    return Form.create(client, domainId, formInfo._source);
           });
 	      callback(null, {total:formInfos.hits.total, forms: forms});
 	    });
       },
 
       refresh: function(callback) {
-	    socket.emit('refreshCollection', domainId, this.id, function(err, result){
+	    client.emit('refreshCollection', domainId, this.id, function(err, result){
 	      callback(err, result);	  
 	    });
       },
@@ -182,4 +187,4 @@ var Collection = {
   }
 };
 
-export { Collection as default};
+module.exports = Collection;

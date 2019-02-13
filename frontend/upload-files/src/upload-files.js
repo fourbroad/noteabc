@@ -1,3 +1,14 @@
+import 'font-awesome/scss/font-awesome.scss';
+
+import * as $ from 'jquery';
+import 'jquery-ui/ui/widget';
+import 'jquery-ui/ui/data';
+
+import 'bootstrap';
+import _ from 'lodash';
+import moment from 'moment';
+import Cookies from 'js-cookie';
+
 import 'blueimp-gallery/css/blueimp-gallery.css';
 import 'blueimp-file-upload/css/jquery.fileupload.css';
 import 'blueimp-file-upload/css/jquery.fileupload-ui.css';
@@ -21,7 +32,7 @@ import uploadFilesHtml from './upload-files.html';
 
 $.widget("nm.uploadfiles", {
   options:{
-    url: "files/",
+    url: "upload-files/",
     forceIframeTransport: false
   },
 
@@ -29,7 +40,8 @@ $.widget("nm.uploadfiles", {
     var o = this.options;
 
     if(o.token){
-      $.ajaxSetup({headers:{token: o.token}});      
+      $.ajaxSetup({headers:{token: o.token}});
+      Cookies.set('token', o.token);
     }
     
     this.$uploadFiles = $(uploadFilesHtml);

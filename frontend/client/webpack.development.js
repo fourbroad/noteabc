@@ -22,12 +22,12 @@ module.exports = merge(common, {
   devServer: {
     contentBase        : path.join(__dirname, 'src'),
     historyApiFallback : true,
-    port               : 8080,
     compress           : false,
     inline             : true,
     watchContentBase   : true,
     hot                : true,
     host               : '0.0.0.0',
+    port               : process.env.PORT || 8080,    
     disableHostCheck   : true,
     overlay            : true,
     stats: {
@@ -45,10 +45,7 @@ module.exports = merge(common, {
   },
   module:{
     rules:[{
-      test: /\.css$/,
-      use: ['style-loader','css-loader']
-    },{
-      test: /\.scss$/,
+      test: /\.(sa|sc|c)ss$/,
       use: [{
         loader: 'style-loader',
       },{
@@ -74,8 +71,14 @@ module.exports = merge(common, {
           ]
         }
       }]
+    },{
+      test: require.resolve('lodash'),
+      use: [{
+        loader: 'expose-loader',
+        options: '_'
+      }]
     }]
-  },
+  },  
   plugins: [
     new HtmlWebpackPlugin({
       title: 'Notesabc Client'

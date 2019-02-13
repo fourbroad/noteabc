@@ -1,3 +1,3 @@
-import Client from './client';
+const Client = require('./client');
 
 window.Client = Client;

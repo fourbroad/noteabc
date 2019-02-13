@@ -9,116 +9,127 @@
   white  : true
  */
 
-
-import _ from 'lodash';
+const _ = require('lodash');
 
 'use strict';
 
 var Form = {
-  create: function(socket, domainId, formData) {
+  create: function(client, domainId, formData) {
     var proto = {
-      getDomainId: function(){
-      	return domainId;
+      getClient: function() {
+        return client;
       },
 
-      getCollectionId: function(){
-      	return ".forms";
+      getDomainId: function() {
+        return domainId;
       },
 
-      saveAs: function(){
-      	var id, title, newForm =  _.cloneDeep(this);
+      getCollectionId: function() {
+        return ".forms";
+      },
 
-	    if(arguments.length == 1 && typeof arguments[0] == 'function'){
-	      id = uuidv4();
-	      title = newForm.title;
-	      callback = arguments[0];
-	    } else if(arguments.length == 2 && typeof arguments[1] == 'function'){
-	      id = arguments[0];
-	      title = newForm.title;
-	      callback = arguments[1];
-	    } else if(arguments.length == 3 && typeof arguments[2] == 'function'){
-	      id = arguments[0];
-	      title = arguments[1];
-	      callback = arguments[2];
-	    } else {
-	      throw new Error('Number or type of Arguments is not correct!');
-	    }
+      saveAs: function() {
+        var id, title, newForm = _.cloneDeep(this);
 
-      	newForm.title = title;
-      	delete newForm.id;
-	    socket.emit('createForm', domainId, id, newForm, function(err, formData){
-	      callback(err, err ? null : Form.create(socket, domainId, formData));
-	    });
+        if (arguments.length == 1 && typeof arguments[0] == 'function') {
+          id = uuidv4();
+          title = newForm.title;
+          callback = arguments[0];
+        } else if (arguments.length == 2 && typeof arguments[1] == 'function') {
+          id = arguments[0];
+          title = newForm.title;
+          callback = arguments[1];
+        } else if (arguments.length == 3 && typeof arguments[2] == 'function') {
+          id = arguments[0];
+          title = arguments[1];
+          callback = arguments[2];
+        } else {
+          throw new Error('Number or type of Arguments is not correct!');
+        }
+
+        newForm.title = title;
+        delete newForm.id;
+        client.emit('createForm', domainId, id, newForm, function(err, formData) {
+          callback(err, err ? null : Form.create(client, domainId, formData));
+        });
       },
 
       replace: function(formRaw, callback) {
-	    const self = this;
-	    socket.emit('replaceForm', domainId, this.id, formRaw, function(err, formData) {
-	      if(err) return callback(err);
+        const self = this;
+        client.emit('replaceForm', domainId, this.id, formRaw, function(err, formData) {
+          if (err)
+            return callback(err);
 
-	      for(var key in self) {
-		    if(self.hasOwnProperty(key)&&!_.isFunction(self[key])) try{delete self[key];}catch(e){}
-	      }
+          for (var key in self) {
+            if (self.hasOwnProperty(key) && !_.isFunction(self[key]))
+              try {
+                delete self[key];
+              } catch (e) {}
+          }
 
-	      _.merge(self, formData);
-	      callback(null, true);	  
-	    });
+          _.merge(self, formData);
+          callback(null, true);
+        });
       },
 
       patch: function(patch, callback) {
-	    const self = this;
-	    socket.emit('patchForm', domainId, this.id, patch, function(err, formData) {
-	      if(err) return callback(err);
-				  
-	      for(var key in self) {
-		    if(self.hasOwnProperty(key)&&!_.isFunction(self[key])) try{delete self[key];}catch(e){}
-	      }
+        const self = this;
+        client.emit('patchForm', domainId, this.id, patch, function(err, formData) {
+          if (err)
+            return callback(err);
 
-	      _.merge(self, formData);
-	      callback(null, true);	  
-	    });
+          for (var key in self) {
+            if (self.hasOwnProperty(key) && !_.isFunction(self[key]))
+              try {
+                delete self[key];
+              } catch (e) {}
+          }
+
+          _.merge(self, formData);
+          callback(null, true);
+        });
       },
 
       remove: function(callback) {
-	    socket.emit('removeForm', domainId, this.id, function(err, result) {
-	      callback(err, result);
-	    });
+        client.emit('removeForm', domainId, this.id, function(err, result) {
+          callback(err, result);
+        });
       },
-  
+
       getACL: function(callback) {
-	    socket.emit('getFormACL', domainId, this.id, function(err, acl) {
-	      callback(err, acl);
-	    });
+        client.emit('getFormACL', domainId, this.id, function(err, acl) {
+          callback(err, acl);
+        });
       },
 
       replaceACL: function(acl, callback) {
-	    socket.emit('replaceFormACL', domainId, this.id, acl, function(err, result) {
-	      callback(err, result);
-	    });
+        client.emit('replaceFormACL', domainId, this.id, acl, function(err, result) {
+          callback(err, result);
+        });
       },
 
       patchACL: function(aclPatch, callback) {
-  	    socket.emit('patchFormACL', domainId, this.id, aclPatch, function(err, result) {
-	      callback(err, result);
-	    });
-      },
-  
-      removePermissionSubject: function(acl, callback) {
-	    socket.emit('removeFormPermissionSubject', domainId, this.id, acl, function(err, result) {
-	      callback(err, result);
-	    });
+        client.emit('patchFormACL', domainId, this.id, aclPatch, function(err, result) {
+          callback(err, result);
+        });
       },
 
-      getFormId: function(){
-      	return this._metadata.formId;
+      removePermissionSubject: function(acl, callback) {
+        client.emit('removeFormPermissionSubject', domainId, this.id, acl, function(err, result) {
+          callback(err, result);
+        });
+      },
+
+      getFormId: function() {
+        return this._metadata.formId;
       }
-      
+
     };
 
-  	function constructor(){};
-  	_.merge(constructor.prototype, proto);
-  	return _.merge(new constructor(), formData);
+    function constructor() {}
+    ;_.merge(constructor.prototype, proto);
+    return _.merge(new constructor(), formData);
   }
 };
 
-export { Form as default};
+module.exports = Form;

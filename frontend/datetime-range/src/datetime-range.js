@@ -1,3 +1,6 @@
+
+import 'jquery.event.ue';
+
 import 'jquery-datetimepicker';
 import 'jquery-datetimepicker/jquery.datetimepicker.css';
 
@@ -80,11 +83,9 @@ $.widget("nm.datetimerange", {
       format:'YYYY-MM-DD HH:mm:ss'
     });
 
-    this._on({
-      'show.bs.dropdown': function () {
-        if(o.earliest) this.$latestInput.val(moment.utc(o.earliest).format('YYYY-MM-DD HH:mm:ss'));
-        if(o.latest) this.$earliestInput.val(moment.utc(o.latest).format('YYYY-MM-DD HH:mm:ss'));
-      }
+    this.element.on('show.bs.dropdown', function () {
+      if(o.earliest) self.$latestInput.val(moment.utc(o.earliest).format('YYYY-MM-DD HH:mm:ss'));
+      if(o.latest) self.$earliestInput.val(moment.utc(o.latest).format('YYYY-MM-DD HH:mm:ss'));
     });
 
     this._on(this.$dropdownMenu, {

@@ -2,6 +2,11 @@ import Cookies from 'js-cookie';
 import Client from '@notesabc/frontend-client'
 import loader from '@notesabc/loader'
 
+import 'jquery-ui/ui/widget';
+import 'jquery-ui/ui/data';
+import 'jquery.urianchor';
+
+
 /**
  * NOTE: Register resize event for Masonry layout
  */
@@ -17,6 +22,116 @@ window.addEventListener('load', ()=>{
 // Trigger resize on any element click
 document.addEventListener('click', ()=>{
   window.dispatchEvent(window.EVENT);
+});
+
+
+$.widget('nm.runtime',{
+  options:{
+    uriAnchor: {}
+  },
+
+  _create: function(){
+    var o = this.options, self = this;
+
+    
+
+    this._on(window, {hashchange: this._onHashchange});
+  },
+
+  _setAchor: function(anchor){
+    var o = this.options;
+    o.uriAnchor = anchor;
+    $.uriAnchor.setAnchor(anchor, null, true);
+  },
+
+  _changeAnchorPart: function(argMap){
+    var o = this.options, anchorRevised = $.extend( true, {}, o.uriAnchor), result = true, keyName, keyNameDep;
+    for(keyName in argMap){
+      if(argMap.hasOwnProperty(keyName) && keyName.indexOf('_') !== 0){
+        // update independent key value
+        anchorRevised[keyName] = argMap[keyName];
+
+        // update matching dependent key
+        keyNameDep = '_' + keyName;
+        if(argMap[keyNameDep]){
+          anchorRevised[keyNameDep] = argMap[keyNameDep];
+        } else {
+          delete anchorRevised[keyNameDep];
+          delete anchorRevised['_s' + keyNameDep];
+        }
+      }
+    }
+
+    // Attempt to update URI; revert if not successful
+    try {
+      $.uriAnchor.setAnchor(anchorRevised);
+    } catch(error) {
+      // replace URI with existing state
+      $.uriAnchor.setAnchor(o.uriAnchor, null, true);
+      result = false;
+    }
+
+    return result;
+  },
+
+  _onHashchange: function(event){
+    var o = this.options, self = this, anchorProposed, anchorPrevious = $.extend(true, {}, o.uriAnchor), 
+        domProposed, colProposed, docProposed, actProposed, isOk = true, errorCallback;
+
+    errorCallback = function(){
+      self._setAchor(anchorPrevious)
+    };
+  
+    try {
+      anchorProposed = $.uriAnchor.makeAnchorMap(); 
+    } catch(error) {
+      $.uriAnchor.setAnchor(anchorPrevious, null, true);
+      return false;
+    }
+    o.uriAnchor = anchorProposed;
+
+    domProposed = anchorProposed.dom;
+    colProposed = anchorProposed.col;
+    docProposed = anchorProposed.doc;
+    actProposed = anchorProposed.act;
+    if(anchorPrevious !== anchorProposed){
+      var opts = {error: errorCallback};
+      if(".views" === colProposed){
+        switch(docProposed){
+          case 'signup':
+            this._loadSignUp(opts);
+            break;
+          case 'dashboard':
+            this._loadDashboard(opts);
+            break;
+          case 'email':
+            this._loadEmail(opts);
+            break;
+          case 'calendar':
+            this._loadCalendar(opts);
+            break;
+          case 'chat':
+            this._loadChat(opts);
+            break;
+          default:            
+            opts.domain = o.domain;
+            this._loadView(o.domain, docProposed, actProposed, opts);
+            break;
+        }
+      } else {
+          opts.domain = o.domain;
+          opts.domainId = domProposed;
+          opts.collectionId = colProposed;
+          opts.documentId = docProposed;
+          this._loadDocument(opts);
+        }
+    }
+
+    return false;
+  }
+
+
+
 });
 
 function createDomain(client, $container){

@@ -1,5 +1,7 @@
 import './numeric-range.scss';
 
+import 'jquery.event.ue';
+
 import utils from '@notesabc/utils';
 import validate from "validate.js";
 import numericRangeHtml from './numeric-range.html';
@@ -47,11 +49,9 @@ $.widget("nm.numericrange", {
   
     this._refreshButton();
 
-    this._on({
-      'show.bs.dropdown':function () {
-        if(o.lowestValue) this.$lowestInput.val(o.lowestValue);
-        if(o.highestValue) this.$highestInput.val(o.highestValue);
-      }
+    this.element.on('show.bs.dropdown', function () {
+      if(o.lowestValue) self.$lowestInput.val(o.lowestValue);
+      if(o.highestValue) self.$highestInput.val(o.highestValue);
     });
 
     this._on(this.$dropdownMenu, {

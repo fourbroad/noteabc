@@ -75,27 +75,6 @@ module.exports = merge(common, {
           ]
         }
       }]
-    },{
-      test: require.resolve('jquery'),
-      use: [{
-        loader: 'expose-loader',
-        options: 'jQuery'
-      },{
-        loader: 'expose-loader',
-        options: '$'
-      }]
-    },{
-      test: require.resolve('lodash'),
-      use: [{
-        loader: 'expose-loader',
-        options: '_'
-      }]
-    },{
-      test: require.resolve('moment'),
-      use: [{
-        loader: 'expose-loader',
-        options: 'moment'
-      }]
     }]
   },
   plugins: [

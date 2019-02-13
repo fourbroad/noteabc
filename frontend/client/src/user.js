@@ -9,13 +9,17 @@
   white  : true
  */
 
-import _ from 'lodash';
+const _ = require('lodash');
 
 'use strict';
 
 var User = {
-  create: function(socket, userData) {
+  create: function(client, userData) {
     var proto = {
+      getClient: function(){
+      	return client;
+      },
+          	
       getDomainId: function(){
       	return "localhost";
       },
@@ -30,7 +34,7 @@ var User = {
 
       replace: function(userRaw, callback) {
 	    const self = this;
-	    socket.emit('replaceUser', this.id, userRaw, function(err, userData) {
+	    client.emit('replaceUser', this.id, userRaw, function(err, userData) {
 	      if(err) return callback(err);
 			  
 	      for(var key in self) {
@@ -44,7 +48,7 @@ var User = {
   
       patch: function(patch, callback) {
 	    const self = this;
-	    socket.emit('patchUser', this.id, patch, function(err, userData) {
+	    client.emit('patchUser', this.id, patch, function(err, userData) {
 	      if(err) return callback(err);
 
 	      for(var key in self) {
@@ -57,37 +61,37 @@ var User = {
       },
   
       remove: function(callback) {
-	    socket.emit('removeUser', this.id, function(err, result) {
+	    client.emit('removeUser', this.id, function(err, result) {
 	      callback(err, result);	  
 	    });
       },
   
       resetPassword: function(newPassword, callback) {
-	    socket.emit('resetPassword', this.id, newPassword, function(err, result) {
+	    client.emit('resetPassword', this.id, newPassword, function(err, result) {
 	      callback(err, result);
 	    });
       },
   
       getACL: function(callback) {
-	    socket.emit('getUserACL', this.id, function(err, acl) {
+	    client.emit('getUserACL', this.id, function(err, acl) {
 	      callback(err, acl);
 	    });
       },
 
       replaceACL: function(acl, callback) {
-	    socket.emit('replaceUserACL', this.id, acl, function(err, result) {
+	    client.emit('replaceUserACL', this.id, acl, function(err, result) {
 	      callback(err, result);
 	    });
       },
 
       patchACL: function(aclPatch, callback) {
-	    socket.emit('patchUserACL', this.id, aclPatch, function(err, result) {
+	    client.emit('patchUserACL', this.id, aclPatch, function(err, result) {
 	      callback(err, result);
 	    });
       },
   
       removePermissionSubject: function(acl, callback) {
-	    socket.emit('removeUserPermissionSubject', this.id, acl, function(err, result) {
+	    client.emit('removeUserPermissionSubject', this.id, acl, function(err, result) {
 	      callback(err, result);
 	    });
       },
@@ -104,4 +108,4 @@ var User = {
   }
 };
 
-export {User as default};
+module.exports = User;

@@ -1,6 +1,6 @@
 {
   "name": "@notesabc/datetime-range",
-  "version": "1.0.19",
+  "version": "1.0.22",
   "description": "",
   "main": "dist/datetime-range.bundle.js",
   "module": "src/datetime-range.js",

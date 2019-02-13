@@ -4,7 +4,8 @@ const
   merge = require('webpack-merge'),
   common = require('./webpack.common.js'),
   cssNext = require('postcss-cssnext'),
-  HtmlWebpackPlugin = require('html-webpack-plugin'),  
+  HtmlWebpackPlugin = require('html-webpack-plugin'),
+  HtmlWebpackIncludeAssetsPlugin = require('html-webpack-include-assets-plugin'),
   DashboardPlugin = require('webpack-dashboard/plugin');
 
 module.exports = merge(common, {
@@ -20,14 +21,14 @@ module.exports = merge(common, {
   },  
   watch: true,
   devServer: {
-    contentBase: [path.join(__dirname, 'src'), __dirname],
+    contentBase: [path.join(__dirname, 'src'), __dirname, path.join(__dirname, '../../distributions')],
     historyApiFallback : true,
-    port               : process.env.PORT || 8080,
     compress           : false,
     inline             : true,
     watchContentBase   : true,
     hot                : true,
     host               : '0.0.0.0',
+    port               : process.env.PORT || 8080,
     disableHostCheck   : true,
     overlay            : true,
     stats: {
@@ -45,10 +46,7 @@ module.exports = merge(common, {
   },
   module:{
     rules:[{
-      test: /\.css$/,
-      use: ['style-loader','css-loader']
-    },{
-      test: /\.scss$/,
+      test: /\.(sa|sc|c)ss$/,
       use: [{
         loader: 'style-loader',
       },{
@@ -68,37 +66,37 @@ module.exports = merge(common, {
         options: {
           sourceMap: true,
           includePaths: [
-            path.join(__dirname, 'node_modules')
+            path.join(__dirname, 'node_modules'),
+            path.join(__dirname, 'src'),
+            path.join(__dirname, 'test')
           ]
         }
       }]
-    },{
-      test: require.resolve('jquery'),
-      use: [{
-        loader: 'expose-loader',
-        options: 'jQuery'
-      },{
-        loader: 'expose-loader',
-        options: '$'
-      }]
-    },{
-      test: require.resolve('lodash'),
-      use: [{
-        loader: 'expose-loader',
-        options: '_'
-      }]
-    },{
-      test: require.resolve('moment'),
-      use: [{
-        loader: 'expose-loader',
-        options: 'moment'
-      }]
     }]
-  },
+  },  
   plugins: [
-    new HtmlWebpackPlugin({title:'Notesabc File Upload'}),  
+    new webpack.ProvidePlugin({
+      $: 'jquery',
+      jQuery: 'jquery',
+      'window.jQuery': 'jquery',
+      'window.$': 'jquery',
+      moment: 'moment',
+      'window.moment': 'moment',
+      _: 'lodash',
+      'window._':'lodash',
+      Popper: ['popper.js', 'default']
+    }),  
+    new webpack.DllReferencePlugin({
+      context: __dirname,
+      manifest: require('./manifest.json'),
+    }),  
+    new HtmlWebpackPlugin({title:'Notesabc File Upload'}),
+    new HtmlWebpackIncludeAssetsPlugin({
+      assets: ['dist/context.bundle.js'],
+      append: false
+    }),
     new DashboardPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
-    new webpack.HotModuleReplacementPlugin(),
+    new webpack.HotModuleReplacementPlugin()
   ]
 });

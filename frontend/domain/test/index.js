@@ -41,3 +41,6 @@ Client.login('administrator', '!QAZ)OKM', function(err, client){
 //     });
   });
 });
+
+
+// $(window).on("hashchange", $.proxy(this._onHashchange, this));

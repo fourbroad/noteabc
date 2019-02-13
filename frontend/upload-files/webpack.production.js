@@ -5,8 +5,7 @@ const
   common = require('./webpack.common.js'),
   cssNext = require('postcss-cssnext'),
   MiniCssExtractPlugin = require("mini-css-extract-plugin"),
-  CleanWebpackPlugin = require('clean-webpack-plugin'),
-  ImageminPlugin    = require('imagemin-webpack-plugin').default ;
+  ImageminPlugin    = require('imagemin-webpack-plugin').default;
 
 const name = '@notesabc/upload-files';
 const identity = "_" + name.replace(/[\.,@,/,-]/g,'_');
@@ -20,20 +19,20 @@ module.exports = merge(common, {
   output: {
     filename: '[name].bundle.js',
     chunkFilename: '[name].bundle.js',
-    path: path.resolve(__dirname, 'dist'),
-    publicPath: 'http://localhost:8088/@notesabc/upload-files/',
+    path: path.resolve(__dirname, '../../distributions/@notesabc/upload-files/'),
+    publicPath: '/@notesabc/upload-files/',
     library: identity,
     libraryTarget: 'umd'
   },
   devServer: {
     contentBase : path.join(__dirname, 'dist'),
     historyApiFallback : true,
-    port               : process.env.PORT || 8080,
     compress           : true,
     inline             : false,
     watchContentBase   : true,
     hot                : false,
     host               : '0.0.0.0',
+    port               : process.env.PORT || 8080,
     disableHostCheck   : true,
     overlay            : true,
     stats: {
@@ -51,12 +50,9 @@ module.exports = merge(common, {
   },
   module:{
     rules:[{
-      test: /\.css$/,
-      use: [MiniCssExtractPlugin.loader, "css-loader"]      
-    },{
-      test: /\.scss$/,
+      test: /\.(sa|sc|c)ss$/,
       use: [{
-        loader: 'style-loader',
+        loader: MiniCssExtractPlugin.loader,
       },{
         loader: 'css-loader',
         options: {
@@ -75,32 +71,29 @@ module.exports = merge(common, {
           sourceMap: false,
           includePaths: [
             path.join(__dirname, 'node_modules'),
-            path.join(__dirname,'src', 'assets', 'styles'),
-            path.join(__dirname,'src')
+            path.join(__dirname, 'src', 'assets', 'styles'),
+            path.join(__dirname, 'src')
           ]
         }
       }]
     }]
   },
-  externals: {
-    jquery: {
-      commonjs: 'jquery',
-      commonjs2: 'jquery',
-      amd: 'jquery'
-    },
-    lodash: {
-      commonjs: 'lodash',
-      commonjs2: 'lodash',
-      amd: 'lodash'
-    },
-    moment: {
-      commonjs: 'moment',
-      commonjs2: 'moment',
-      amd: 'moment'
-    }
-  },  
   plugins: [
-    new CleanWebpackPlugin(['dist']),
+    new webpack.ProvidePlugin({
+      $: 'jquery',
+      jQuery: 'jquery',
+      'window.jQuery': 'jquery',
+      'window.$': 'jquery',
+      moment: 'moment',
+      'window.moment': 'moment',
+      _: 'lodash',
+      'window._':'lodash',
+      Popper: ['popper.js', 'default']
+    }),
+    new webpack.DllReferencePlugin({
+      context: __dirname,
+      manifest: require('./manifest.json'),
+    }),  
     new ImageminPlugin(),
     new webpack.DefinePlugin({'process.env.NODE_ENV': JSON.stringify('production')})    
   ]

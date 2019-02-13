@@ -29,8 +29,11 @@ module.exports = {
     },{
       test: /\.(png|gif|jpg|svg)$/,
       use: [{
-        loader: 'file-loader'
-      }]
+        loader: 'file-loader',
+        options: {
+          outputPath: 'assets'
+        }
+      }]      
     },{
       test: /\.(js)$/,
       use: ['babel-loader']
@@ -41,33 +44,16 @@ module.exports = {
         options: {
           minimize: true
         }
-      }]      
-    },{
-      test: require.resolve('jquery'),
-      use: [{
-        loader: 'expose-loader',
-        options: 'jQuery'
-      },{
-        loader: 'expose-loader',
-        options: '$'
-      }]
-    },{
-      test: require.resolve('lodash'),
-      use: [{
-        loader: 'expose-loader',
-        options: '_'
       }]
     }]
   },
   plugins: [
-    new webpack.ProvidePlugin({
-      Popper: ['popper.js', 'default']
-    }),
-    new CaseSensitivePathsPlugin(),
     new MiniCssExtractPlugin({
       // Options similar to the same options in webpackOptions.output both options are optional
-      filename: "[name].[chunkhash].css",
-      chunkFilename: "[name].[chunkhash].css"
-    }),
+//       filename: "[name].[chunkhash].css",
+//       chunkFilename: "[name].[chunkhash].css"
+      filename: '[name].bundle.css',
+      chunkFilename: '[name].bundle.css',
+    })
   ]
 };

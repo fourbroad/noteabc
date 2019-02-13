@@ -1,13 +1,23 @@
-// import 'datatables.net';
+import * as $ from 'jquery';
+
+import 'bootstrap';
+import _ from 'lodash';
+import moment from 'moment';
+
+import 'jquery-ui/ui/widget';
+import 'jquery-ui/ui/data';
+import 'jquery.urianchor';
 
 import 'datatables.net-bs4';
 import 'datatables.net-bs4/css/dataTables.bootstrap4.css';
 
-import jsonPatch from "fast-json-patch";
+// import * as jsonPatch from 'fast-json-patch';
+var jsonPatch = require('fast-json-patch');
 import validate from "validate.js";
 
 import utils from '@notesabc/utils';
-import moment from 'moment';
+import Loader from '@notesabc/loader';
+
 import '@notesabc/select';
 import '@notesabc/numeric-range';
 import '@notesabc/datetime-range';
@@ -23,8 +33,6 @@ $.widget("nm.view", {
         presence: true
       }
     },
-    viewLinkTemplate : _.template('<a href="#!module=view:id,${id}">${text}</a>'),
-    docLinkTemplate: _.template('<a href="#!module=document:domainId,${domainId}|collectionId,${collectionId}|documentId,${documentId}">${text}</a>'),
     linkTemplate: _.template('<a href="#!col=${collectionId}&doc=${documentId}">${text}</a>'),
     linkTemplateWithDomain: _.template('<a href="#!dom=${domainId}&col=${collectionId}&doc=${documentId}">${text}</a>')
   },
@@ -38,20 +46,27 @@ $.widget("nm.view", {
     this._addClass('nm-view', 'container-fluid');
     this.element.html(viewHtml);
 
-    this.$viewHeader = ('.view-header', this.element);
-    this.$viewTable = $('#viewTable', this.element);
-    this.$modified = $('.modified', this.$viewHeader);
-    this.$dropdownToggle = $('.dropdown-toggle', this.$viewHeader);
-    this.$saveBtn =$('.save.btn', this.$viewHeader);
+    this.$viewHeader = $('.view-header', this.element);
+    this.$actions = $('.actions', this.$viewHeader);
+    this.$actionMoreMenu = $('.more>.dropdown-menu', this.$actions);
+    this.$itemSaveAs = $('.dropdown-item.save-as', this.$actionMoreMenu);
+    this.$saveBtn =$('.save.btn', this.$actions);
+    this.$cancelBtn = $('.cancel.btn', this.$actions);
+
     this.$viewTitle = $('h4', this.$viewHeader);
     this.$viewTitle.html(o.view.title||o.view.id);
-    this.$itemSaveAs = $('.dropdown-item.save-as', this.$viewHeader);
-    this.$itemDiscard = $('.dropdown-item.discard', this.$viewHeader);
-    this.$newViewModel = $('#newView', this.$viewHeader);
-    this.$titleInput = $('input[name="title"]', this.$newViewModel);
-    this.$form = $('form.new-view', this.$newViewModel);
-    this.$submitBtn = $('.btn.submit', this.$newViewModel);
+
+    this.$viewTable = $('.view-table', this.element);
+    this.$saveAsModel = $('#save-as', this.$viewHeader);
+    this.$titleInput = $('input[name="title"]', this.$saveAsModel);
+    this.$form = $('form.new-view', this.$saveAsModel);
+    this.$submitBtn = $('.btn.submit', this.$saveAsModel);
     this.$searchContainer = $('.search-container', this.$view);
+
+    $.each(o.view.actions, $.proxy(function(i, action){
+      var $li = $('<li class="dropdown-item"></li>').html(action.label).appendTo(this.$actionMoreMenu).data('action', action);
+      this._on($li, {click:this._onLoadAction});
+    }, this));
 
     this._refreshHeader();
     this._initSearchBar();
@@ -61,9 +76,9 @@ $.widget("nm.view", {
       lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],      
       processing: true,
       serverSide: true,
-      columns: this.columns,
+      columns: _.cloneDeep(this.columns),
       searchCols: this._armSearchCol(),
-      order: JSON.parse(o.view.order)||[],
+      order: (o.view.order&&JSON.parse(o.view.order))||[],
       columnDefs : [{
         targets:'_all',
         render:function(data, type, row, meta){
@@ -71,7 +86,6 @@ $.widget("nm.view", {
           switch(column.className){
             case 'id':
             case 'title':
-//               text = type =='view' ? o.viewLinkTemplate({id: row.id, text: data}) : o.docLinkTemplate({domainId:row.getDomainId(), collectionId: row.getCollectionId(), documentId: row.id, text: data});
               var anchor = {collectionId: row.getCollectionId(), documentId: row.id, text: data};
               text = document.domain == row.getDomainId() ? o.linkTemplate(anchor) : o.linkTemplateWithDomain($.extend({domainId:row.getDomainId()}, anchor));
               break;
@@ -133,16 +147,25 @@ $.widget("nm.view", {
     });
 
 
-    this.$newViewModel.on('shown.bs.modal', function () {
+    this.$saveAsModel.on('shown.bs.modal', function () {
       self.$titleInput.val('');
       self.$titleInput.trigger('focus')
     })    
 
     this._on(this.$saveBtn, {click: this.save});
     this._on(this.$itemSaveAs, {click: this._onItemSaveAs});
-    this._on(this.$itemDiscard, {click: this._onDiscard});
+    this._on(this.$cancelBtn, {click: this._onCancel});
     this._on(this.$submitBtn, {click: this._onSubmit});
     this._on(this.$form, {submit: this._onSubmit});
+  },
+
+  _onLoadAction: function(e){
+    var o = this.options, $li = $(e.target), action = $li.data('action');
+    $.uriAnchor.setAnchor({
+      col: '.views',
+      doc: o.view.id,
+      act: action.plugin.name
+    });    
   },
 
   _initSearchBar: function(){
@@ -155,11 +178,12 @@ $.widget("nm.view", {
             class:'search-item',
             btnClass:'btn-sm',
             mode: 'multi',
+            selectedItems: sc.selectedItems,
             menuItems: function(filter, callback){
               o.view.distinctQuery(sc.name, filter, function(err4, docs){
                 if(err4) return console.log(err4);
                 var items = _.map(docs.documents, function(doc){
-                  return {label:doc['title']||_.at(doc, sc.name), value:_.at(doc, sc.name)};
+                  return {label:doc['title']||_.at(doc, sc.name)[0], value:_.at(doc, sc.name)[0]};
                 });
                 callback(items);
               });
@@ -177,8 +201,9 @@ $.widget("nm.view", {
               return label == '' ? sc.title + ":all" : label;
             },
             valueChanged: function(event, values){
-              sc.selectedItems = values.selectedItems;
-              self.table.column(sc.name+':name').search(_(sc.selectedItems).map("value").filter().flatMap().value().join(',')).draw();
+              var sc2 = _.find(self.searchColumns, function(o){return o.name == sc.name});
+              sc2.selectedItems = values.selectedItems;
+              self.table.column(sc2.name+':name').search(_(sc2.selectedItems).map("value").filter().flatMap().value().join(',')).draw();
               self._refreshHeader();
             }
           });
@@ -190,20 +215,12 @@ $.widget("nm.view", {
             title: sc.title,
             lowestValue: sc.lowestValue,
             highestValue: sc.highestValue,
-            menuItems: function(filter, callback){
-              o.view.distinctQuery(sc.name, filter, function(err4, docs){
-                if(err4) return console.log(err4);
-                var items = _.map(docs.documents, function(doc){
-                  return {label:doc['title']||doc[sc.name], value:doc[sc.name]};
-                });
-                callback(items);
-              });
-            },
             valueChanged: function(event, range){
-              sc.lowestValue = range.lowestValue;
-              sc.highestValue = range.highestValue;
-              self.table.column(sc.name+':name')
-                .search(sc.lowestValue||sc.highestValue ? [sc.lowestValue, sc.highestValue].join(','):'')
+              var sc2 = _.find(self.searchColumns, function(o){return o.name == sc.name});
+              sc2.lowestValue = range.lowestValue;
+              sc2.highestValue = range.highestValue;
+              self.table.column(sc2.name+':name')
+                .search(sc2.lowestValue||sc2.highestValue ? [sc2.lowestValue, sc2.highestValue].join(','):'')
                 .draw();
               self._refreshHeader();
             }
@@ -216,20 +233,12 @@ $.widget("nm.view", {
             title: sc.title,
             earliest: sc.earliest,
             latest: sc.latest,
-            menuItems: function(filter, callback){
-              o.view.distinctQuery(sc.name, filter, function(err4, docs){
-                if(err4) return console.log(err4);
-                var items = _.map(docs.documents, function(doc){
-                  return {label:doc['title']||doc[sc.name], value:doc[sc.name]};
-                });
-                callback(items);
-              });
-            },
             valueChanged: function(event, range){
-              sc.earliest = range.earliest;
-              sc.latest = range.latest;
-              self.table.column(sc.name+':name')
-                .search(sc.earliest||sc.latest ? [sc.earliest, sc.latest].join(','):'')
+              var sc2 = _.find(self.searchColumns, function(o){return o.name == sc.name});
+              sc2.earliest = range.earliest;
+              sc2.latest = range.latest;
+              self.table.column(sc2.name+':name')
+                .search(sc2.earliest||sc2.latest ? [sc2.earliest, sc2.latest].join(','):'')
                 .draw();
               self._refreshHeader();
             }
@@ -272,15 +281,11 @@ $.widget("nm.view", {
 
   _refreshHeader: function(){
     if(this._isDirty()){
-      this.$saveBtn.html("Save");
-      this.$saveBtn.removeAttr('data-toggle');
-      this.$modified.show();
-      this.$dropdownToggle.show();
+      this.$saveBtn.show();
+      this.$cancelBtn.show();
     }else{
-      this.$saveBtn.html("Save as ...");
-      this.$saveBtn.attr({'data-toggle':'modal'});      
-      this.$modified.hide();
-      this.$dropdownToggle.hide();
+      this.$saveBtn.hide();
+      this.$cancelBtn.hide();
     }
   },
 
@@ -303,7 +308,7 @@ $.widget("nm.view", {
       o = this.options,
       iColumns = kvMap['iColumns'], iDisplayStart = kvMap['iDisplayStart'], iSortingCols = kvMap["iSortingCols"],
       iDisplayLength = kvMap['iDisplayLength'], sSearch = kvMap['sSearch'], mustArray=[], 
-      searchNames = (o.view.search&&o.view.search.names)||[], sort = [];
+      searchNames = (o.view.search && o.view.search.names)||[], sort = [];
 
     for(var i=0; i<iColumns; i++){
       var mDataProp_i = kvMap['mDataProp_'+i], sSearch_i = kvMap['sSearch_'+i], shouldArray = [], range;
@@ -390,20 +395,53 @@ $.widget("nm.view", {
   },
 
   _onSubmit: function(evt){
+    var o = this.options, self = this, errors = validate(this.$form, o.constraints);
+
     evt.preventDefault();
     evt.stopPropagation();
-    this.saveAs();
+
+    if (errors) {
+      utils.showErrors(this.$form, errors);
+    } else {
+      var values = validate.collectFormValues(this.$form, {trim: true}), title = values.title;
+      this.saveAs(title, function(err, view){
+        if(err) return console.log(err);
+        utils.clearErrors(self.$form);
+        self.$saveAsModel.modal('toggle')
+        setTimeout(function(){
+          $.uriAnchor.setAnchor({
+            col: '.views',
+            doc: view.id
+          });
+        },500);
+      });
+    }
   },
 
   _onItemSaveAs: function(evt){
-    this.$newViewModel.modal('toggle');
+    this.$saveAsModel.modal('toggle');
+  },
+
+  saveAs: function(title, callback){
+    var o = this.options, self = this, viewInfo = _.cloneDeep(o.view);
+    delete viewInfo.id;
+    delete viewInfo.collectionId;
+    delete viewInfo.domainId;
+    viewInfo.title = title;
+    viewInfo.columns = _.cloneDeep(this.columns);
+    viewInfo.searchColumns = _.cloneDeep(this.searchColumns);
+    currentDomain.createView(viewInfo, function(err, view){
+      callback && callback(err, view);
+    })
   },
 
   save: function(){
     var o = this.options, self = this;
     if(this._isDirty()){
-      var newView = _.assignIn({}, o.view, {columns: this.columns, searchColumns: this.searchColumns});
-      o.view.patch(jsonPatch.compare(o.view, newView), function(err, result){
+      var newData = {columns: this.columns, searchColumns: this.searchColumns}, 
+          oldData = {columns: o.view.columns, searchColumns: o.view.searchColumns};
+      o.view.patch(jsonPatch.compare(oldData, newData), function(err, result){
+        if(err) return console.log(err);
         self.columns = _.cloneDeep(o.view.columns);
         self.searchColumns = _.cloneDeep(o.view.searchColumns);
         self._refreshHeader();
@@ -411,28 +449,7 @@ $.widget("nm.view", {
     }
   },
 
-  saveAs: function(){
-    var o = this.options, self = this, errors = validate(this.$form, o.constraints);
-    if (errors) {
-      utils.showErrors(this.$form, errors);
-    } else {
-      var values = validate.collectFormValues(this.$form, {trim: true}), title = values.title, viewInfo = _.cloneDeep(o.view);
-      delete viewInfo.id;
-      delete viewInfo.collectionId;
-      delete viewInfo.domainId;
-      viewInfo.title = title;
-      currentDomain.createView(viewInfo, function(err, v){
-        if(err) return console.log(err);
-        o.view.refresh(function(){
-          self.table.draw(false);
-          self.$newViewModel.modal('toggle')
-        });
-      })
-      utils.clearErrors(this.$form);
-    }
-  },
-
-  _onDiscard: function(){
+  _onCancel: function(){
     var o = this.options, self = this;
     this.columns = _.cloneDeep(o.view.columns);
     this.searchColumns = _.cloneDeep(o.view.searchColumns);

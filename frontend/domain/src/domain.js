@@ -104,7 +104,6 @@ $.widget('nm.domain',{
       }, 300);
     });
 
-
 //   $.uriAnchor.configModule({
 //     schema_map : {
 //       module: ['signup','dashboard', 'email', 'compose', 'calendar', 'chat', 'view', 'document', 'charts', 'forms'],
@@ -119,7 +118,7 @@ $.widget('nm.domain',{
     o.domain.findViews({}, function(err, views){
       if(err) return console.log(err);
       _.each(views.views, function(view){
-        $(self._armViewListItem(view.id)).data('item', view).appendTo(self.$viewList);
+        $(self._armViewListItem(view.title||view.id)).data('item', view).appendTo(self.$viewList);
       });
           
       $(window).trigger('hashchange');
@@ -169,7 +168,7 @@ $.widget('nm.domain',{
 
   _onHashchange: function(event){
     var o = this.options, self = this, anchorProposed, anchorPrevious = $.extend(true, {}, o.uriAnchor), 
-        moduleProposed, domProposed, colProposed, docProposed, isOk = true, errorCallback;
+        domProposed, colProposed, docProposed, actProposed, isOk = true, errorCallback;
 
     errorCallback = function(){
       self._setAchor(anchorPrevious)
@@ -186,6 +185,7 @@ $.widget('nm.domain',{
     domProposed = anchorProposed.dom;
     colProposed = anchorProposed.col;
     docProposed = anchorProposed.doc;
+    actProposed = anchorProposed.act;
     if(anchorPrevious !== anchorProposed){
       var opts = {error: errorCallback};
       if(".views" === colProposed){
@@ -207,7 +207,7 @@ $.widget('nm.domain',{
             break;
           default:            
             opts.domain = o.domain;
-            this._loadView(o.domain, docProposed, opts);
+            this._loadView(o.domain, docProposed, actProposed, opts);
             break;
         }
       } else {
@@ -270,15 +270,26 @@ $.widget('nm.domain',{
     });
   },
 
-  _loadView: function(domain, viewId, opts){
-    var self = this;
-    import(/* webpackChunkName: "view" */ '@notesabc/view').then(() => {
-      domain.getView(viewId, function(err, view){
-        $("<div/>").appendTo(self.$mainContent.empty()).view({
-          domain: domain,
-          view: view
-        })
-      });
+  _loadView: function(domain, viewId, actId, opts){
+    var o = this.options, self = this;
+    domain.getView(viewId, function(err, view){
+      if(actId){
+        var action = _.find(view.actions, function(act){return act.plugin.name == actId});
+        Loader.load(action.plugin, function(){
+          $('<div/>').appendTo(self.$mainContent.empty())[action.plugin.name]({
+            view: view,
+            token: o.domain.getClient().getToken(),
+            url: "http://localhost:8000/upload-files/"
+          });
+        });
+      } else {
+        import(/* webpackChunkName: "view" */ '@notesabc/view').then(() => {
+          $("<div/>").appendTo(self.$mainContent.empty()).view({
+            domain: domain,
+            view: view
+          });
+        });
+      }
     });
   },
 
@@ -286,11 +297,11 @@ $.widget('nm.domain',{
     var o = this.options, self = this;
     o.domain.getDocument(opts.collectionId, opts.documentId, function(err1, doc){
       if(err1) return console.log(err1);
-      var formId = doc.getFormId()||'json-form';
+      var formId = doc.getFormId()||'form';
       o.domain.getForm(formId, function(err2, form){
         if(err2) return console.log(err2);
         Loader.load(form.plugin, function(module){
-          $('<div/>').appendTo(self.$mainContent.empty()).jsonform({
+          $('<div/>').appendTo(self.$mainContent.empty()).form({
             client: o.client,
             form: form,
             document: doc
@@ -300,12 +311,19 @@ $.widget('nm.domain',{
     });
   },
 
-  _onClientChanged: function(event, c){
-    o.client = c;
-    if(c.getCurrentUser().isAnonymous()){
-      localStorage.removeItem('token');
-    }else{
-      localStorage.setItem('token', c.getToken());  		
+  _onClientChanged: function(event, client){
+    this.option('client', client);
+  },
+
+  _setOption: function(key, value){
+    if(key === 'client'){
+      var client = value;
+      if(client.getCurrentUser().isAnonymous()){
+        localStorage.removeItem('token');
+      }else{
+        localStorage.setItem('token', client.getToken());
+      }
     }
+    this._super(key, value);
   }
 });
